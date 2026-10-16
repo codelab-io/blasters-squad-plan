@@ -1,738 +1,247 @@
 <!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="color-scheme" content="light dark" />
-  <link rel="icon" href="data:," />
-  <title>Blasters Squad Plan</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      color-scheme: light dark;
-      --ink: #071c43;
-      --muted: #49617f;
-      --paper: #f4f7fb;
-      --surface: #ffffff;
-      --surface-2: #e8eef5;
-      --line: #c8d3df;
-      --blue: #043b91;
-      --blue-deep: #06275e;
-      --blue-soft: #dce9fc;
-      --yellow: #ffd928;
-      --yellow-ink: #292100;
-      --pitch: #0c7b4c;
-      --pitch-dark: #08643d;
-      --pitch-line: rgba(255,255,255,.72);
-      --shadow: 0 18px 48px rgba(0, 33, 86, .14);
-      --danger: #c34526;
-    }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --ink: #f4f8ff;
-        --muted: #aebcd0;
-        --paper: #061329;
-        --surface: #0c1d38;
-        --surface-2: #122847;
-        --line: #29415f;
-        --blue: #77a9ef;
-        --blue-deep: #041a3f;
-        --blue-soft: #102f5a;
-        --yellow: #ffdc32;
-        --yellow-ink: #231c00;
-        --pitch: #096842;
-        --pitch-dark: #075435;
-        --pitch-line: rgba(255,255,255,.65);
-        --shadow: 0 18px 48px rgba(0, 0, 0, .35);
-        --danger: #ff916f;
-      }
-    }
-
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      min-width: 0;
-      background: var(--paper);
-      color: var(--ink);
-      font-family: "Source Sans 3", sans-serif;
-      font-size: 16px;
-      line-height: 1.5;
-    }
-    button { font: inherit; }
-    button:focus-visible, a:focus-visible { outline: 3px solid var(--yellow); outline-offset: 3px; }
-    .page { overflow: hidden; }
-    .hero {
-      position: relative;
-      padding: clamp(34px, 7vw, 82px) 20px clamp(50px, 8vw, 92px);
-      color: white;
-      background:
-        linear-gradient(115deg, rgba(255,217,40,.16) 0 16%, transparent 16% 100%),
-        var(--blue-deep);
-      border-bottom: 7px solid var(--yellow);
-    }
-    .hero::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      opacity: .1;
-      background-image: repeating-linear-gradient(90deg, transparent 0 54px, white 54px 55px);
-    }
-    .hero-inner, .shell { width: min(1120px, 100%); margin: 0 auto; }
-    .hero-inner { position: relative; z-index: 1; display: grid; grid-template-columns: 1.3fr .7fr; gap: 40px; align-items: end; }
-    .kicker {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 10px;
-      color: var(--yellow);
-      font: 700 15px/1 "Barlow Condensed", sans-serif;
-      letter-spacing: .14em;
-      text-transform: uppercase;
-    }
-    .kicker::before { content: ""; width: 34px; height: 4px; background: currentColor; }
-    h1, h2, h3, p { margin-top: 0; }
-    h1 {
-      max-width: 760px;
-      margin-bottom: 12px;
-      font: 800 clamp(45px, 7vw, 82px)/.88 "Barlow Condensed", sans-serif;
-      letter-spacing: -.035em;
-      text-transform: uppercase;
-    }
-    .hero p { max-width: 640px; margin: 0; color: #dce8f8; font-size: clamp(17px, 2vw, 21px); }
-    .coach-card {
-      justify-self: end;
-      width: min(300px, 100%);
-      padding: 22px;
-      border-top: 5px solid var(--yellow);
-      background: rgba(1, 18, 49, .7);
-    }
-    .coach-card strong { display: block; color: var(--yellow); font: 800 28px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; }
-    .coach-card span { color: #dce8f8; }
-
-    main { padding: 46px 20px 70px; }
-    .shell { display: grid; gap: 48px; }
-    .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 18px; margin-bottom: 18px; }
-    .section-heading h2 { margin: 0; font: 800 clamp(30px, 4vw, 42px)/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: -.01em; }
-    .section-heading p { max-width: 520px; margin: 0; color: var(--muted); }
-
-    .formation-layout { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 24px; align-items: start; }
-    .pitch-panel { min-width: 0; }
-    .formation-controls {
-      display: inline-flex;
-      padding: 4px;
-      margin-bottom: 13px;
-      background: var(--surface-2);
-      border: 1px solid var(--line);
-      border-radius: 999px;
-    }
-    .formation-controls button {
-      min-width: 86px;
-      padding: 9px 17px;
-      border: 0;
-      border-radius: 999px;
-      color: var(--muted);
-      background: transparent;
-      font-weight: 800;
-      cursor: pointer;
-    }
-    .formation-controls button[aria-pressed="true"] { color: var(--yellow-ink); background: var(--yellow); box-shadow: 0 2px 8px rgba(73,59,0,.2); }
-    .formation-status { padding: 9px 17px; border-radius: 999px; color: var(--yellow-ink); background: var(--yellow); font-weight: 800; }
-    .pitch {
-      position: relative;
-      isolation: isolate;
-      width: 100%;
-      aspect-ratio: 4 / 5.15;
-      min-height: 620px;
-      overflow: hidden;
-      border: 8px solid var(--blue-deep);
-      background:
-        repeating-linear-gradient(0deg, rgba(255,255,255,.055) 0 9.09%, transparent 9.09% 18.18%),
-        linear-gradient(90deg, var(--pitch), var(--pitch-dark));
-      box-shadow: var(--shadow);
-    }
-    .pitch-lines, .pitch-lines::before, .pitch-lines::after { position: absolute; pointer-events: none; z-index: -1; }
-    .pitch-lines { inset: 18px; border: 2px solid var(--pitch-line); }
-    .pitch-lines::before {
-      content: "";
-      left: -2px; right: -2px; top: 50%;
-      border-top: 2px solid var(--pitch-line);
-    }
-    .pitch-lines::after {
-      content: "";
-      width: 22%; aspect-ratio: 1;
-      left: 50%; top: 50%; transform: translate(-50%, -50%);
-      border: 2px solid var(--pitch-line); border-radius: 50%;
-    }
-    .box { position: absolute; left: 28%; width: 44%; height: 14%; border: 2px solid var(--pitch-line); pointer-events: none; }
-    .box.top { top: 18px; border-top: 0; }
-    .box.bottom { bottom: 18px; border-bottom: 0; }
-    .goal { position: absolute; left: 41%; width: 18%; height: 13px; border: 2px solid var(--pitch-line); pointer-events: none; }
-    .goal.top { top: 5px; }
-    .goal.bottom { bottom: 5px; }
-    .player {
-      position: absolute;
-      width: clamp(62px, 13vw, 94px);
-      padding: 0;
-      border: 0;
-      color: white;
-      background: transparent;
-      cursor: pointer;
-      transform: translate(-50%, -50%);
-      text-align: center;
-      z-index: 2;
-    }
-    .disc {
-      position: relative;
-      display: grid;
-      place-items: center;
-      width: clamp(39px, 7vw, 50px);
-      aspect-ratio: 1;
-      margin: 0 auto 4px;
-      border: 3px solid var(--yellow);
-      border-radius: 50%;
-      color: white;
-      background: var(--blue-deep);
-      font: 800 clamp(14px, 3vw, 18px)/1 "Barlow Condensed", sans-serif;
-      box-shadow: 0 4px 11px rgba(0,0,0,.32);
-    }
-    .player.foreign .disc::after {
-      content: "F";
-      position: absolute;
-      right: 0; top: 0;
-      display: grid; place-items: center;
-      width: 18px; height: 18px;
-      border: 2px solid var(--blue-deep);
-      border-radius: 50%;
-      color: var(--yellow-ink);
-      background: var(--yellow);
-      font: 800 11px/1 "Source Sans 3", sans-serif;
-    }
-    .player-name {
-      display: block;
-      padding: 3px 5px 4px;
-      color: #fff;
-      background: rgba(1, 24, 58, .91);
-      font: 700 clamp(11px, 2.2vw, 14px)/1.05 "Barlow Condensed", sans-serif;
-      text-transform: uppercase;
-      box-shadow: 0 2px 5px rgba(0,0,0,.2);
-    }
-    .player[data-player="sreekuttan"] .player-name { font-size: 9px; }
-    .player:hover .disc { background: var(--yellow); color: var(--yellow-ink); transform: translateY(-2px); }
-    .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 11px; color: var(--muted); font-size: 14px; }
-    .legend span { display: inline-flex; gap: 7px; align-items: center; }
-    .legend .foreign-dot { display: grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; color: var(--yellow-ink); background: var(--yellow); font-size: 10px; font-weight: 800; }
-    .legend .tap-dot { width: 18px; height: 18px; border: 2px solid var(--blue); border-radius: 50%; }
-
-    .tactics-card { position: sticky; top: 20px; overflow: hidden; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow); }
-    .tactics-card header { padding: 21px 22px 16px; color: white; background: var(--blue-deep); border-bottom: 5px solid var(--yellow); }
-    .tactics-card h3 { margin: 0 0 4px; font: 800 29px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; }
-    .tactics-card header p { margin: 0; color: #cad8ed; }
-    .tactics-list { list-style: none; margin: 0; padding: 10px 22px 21px; }
-    .tactics-list li { display: grid; grid-template-columns: 52px 1fr; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--line); }
-    .tactics-list li:last-child { border-bottom: 0; }
-    .tactics-list b { color: var(--blue); font: 800 23px/1 "Barlow Condensed", sans-serif; }
-    .slot-card {
-      display: grid;
-      grid-template-columns: 210px 1fr;
-      gap: 25px;
-      align-items: center;
-      padding: 26px;
-      color: white;
-      background: var(--blue-deep);
-      border-bottom: 6px solid var(--yellow);
-    }
-    .slot-count strong { display: block; color: var(--yellow); font: 800 54px/.9 "Barlow Condensed", sans-serif; }
-    .slot-count span { color: #d5e2f4; }
-    .slots { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
-    .slot { min-width: 0; padding: 13px 10px; border: 1px solid #3f5d89; background: #0a326f; }
-    .slot b { display: block; overflow-wrap: anywhere; font: 700 17px/1.05 "Barlow Condensed", sans-serif; text-transform: uppercase; }
-    .slot span { color: #bcd0eb; font-size: 12px; }
-    .slot.open { display: grid; place-items: center; min-height: 62px; border: 2px dashed var(--yellow); color: var(--yellow); background: transparent; font: 800 18px/1 "Barlow Condensed", sans-serif; }
-
-    .depth-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
-    .depth-group { overflow: hidden; background: var(--surface); border: 1px solid var(--line); box-shadow: 0 8px 24px rgba(0,33,86,.07); }
-    .depth-group h3 { margin: 0; padding: 15px 18px; color: white; background: var(--blue-deep); font: 800 25px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; }
-    .depth-body { padding: 17px 18px 19px; }
-    .depth-label { margin-bottom: 7px; color: var(--muted); font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
-    .name-list { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 17px; }
-    .name-list:last-child { margin-bottom: 0; }
-    .chip { display: inline-flex; align-items: center; gap: 6px; padding: 7px 10px; color: var(--ink); background: var(--surface-2); border: 1px solid var(--line); font-weight: 700; line-height: 1.15; }
-    .chip .f { padding: 2px 5px; color: var(--yellow-ink); background: var(--yellow); font-size: 10px; font-weight: 800; }
-    .detail-list { display: grid; gap: 8px; margin-top: 14px; }
-    .detail { color: var(--muted); font-size: 14px; }
-    .detail strong { color: var(--ink); }
-
-    .fixture-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--line); background: var(--surface); }
-    .fixture { min-width: 0; padding: 22px; border-right: 1px solid var(--line); }
-    .fixture:last-child { border-right: 0; }
-    .fixture-top { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 12px; color: var(--muted); font-size: 14px; }
-    .venue-tag { color: var(--yellow-ink); background: var(--yellow); padding: 2px 7px; font-weight: 800; text-transform: uppercase; }
-    .teams { font: 800 24px/1.05 "Barlow Condensed", sans-serif; text-transform: uppercase; }
-    .teams .vs { display: block; margin: 6px 0; color: var(--muted); font: 600 14px/1 "Source Sans 3", sans-serif; }
-    .fixture p { margin: 13px 0 0; color: var(--muted); font-size: 14px; }
-
-    .news-live-tag { display: inline-flex; align-items: center; gap: 7px; color: var(--yellow-ink); background: var(--yellow); padding: 3px 9px; font-weight: 800; text-transform: uppercase; font-size: 13px; }
-    .news-live-tag::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #c34526; animation: news-pulse 1.8s ease-in-out infinite; }
-    @keyframes news-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
-    .news-list { border: 1px solid var(--line); background: var(--surface); }
-    .news-item { padding: 19px 22px; border-bottom: 1px solid var(--line); }
-    .news-item:last-child { border-bottom: 0; }
-    .news-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 5px; color: var(--muted); font-size: 13px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
-    .news-meta .news-source { color: var(--blue); }
-    .news-item h3 { margin: 0 0 5px; font: 700 22px/1.1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .01em; }
-    .news-item h3 a { color: var(--ink); text-decoration: none; }
-    .news-item h3 a:hover { color: var(--blue); text-decoration: underline; }
-    .news-item p { margin: 0; color: var(--muted); font-size: 15px; }
-    .news-fallback { padding: 22px; border: 1px dashed var(--line); background: var(--surface); color: var(--muted); }
-
-    .footer { display: flex; justify-content: space-between; align-items: center; gap: 20px; width: min(1120px, calc(100% - 40px)); margin: 0 auto; padding: 25px 0 calc(25px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); color: var(--muted); }
-    .footer strong { color: var(--ink); }
-
-    .modal {
-      position: fixed;
-      inset: 0;
-      z-index: 20;
-      display: none;
-      place-items: center;
-      padding: 20px;
-      background: rgba(0, 14, 36, .74);
-    }
-    .modal.open { display: grid; }
-    .player-card {
-      position: relative;
-      width: min(480px, 100%);
-      overflow: hidden;
-      color: var(--ink);
-      background: var(--surface);
-      box-shadow: 0 30px 80px rgba(0,0,0,.35);
-    }
-    .player-card-head { padding: 27px 64px 22px 25px; color: white; background: var(--blue-deep); border-bottom: 6px solid var(--yellow); }
-    .player-card-head .position { color: var(--yellow); font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
-    .player-card-head h3 { margin: 3px 0 0; font: 800 40px/.95 "Barlow Condensed", sans-serif; text-transform: uppercase; }
-    .close {
-      position: absolute;
-      top: 14px; right: 14px;
-      width: 40px; height: 40px;
-      border: 1px solid rgba(255,255,255,.4);
-      border-radius: 50%;
-      color: white;
-      background: transparent;
-      font-size: 25px;
-      line-height: 1;
-      cursor: pointer;
-    }
-    .player-data { display: grid; grid-template-columns: repeat(3, 1fr); border-bottom: 1px solid var(--line); }
-    .player-data div { padding: 17px; border-right: 1px solid var(--line); }
-    .player-data div:last-child { border-right: 0; }
-    .player-data span { display: block; color: var(--muted); font-size: 12px; font-weight: 700; text-transform: uppercase; }
-    .player-data strong { display: block; margin-top: 2px; overflow-wrap: anywhere; }
-    .player-role { padding: 22px 25px 26px; }
-    .player-role span { display: block; margin-bottom: 5px; color: var(--blue); font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
-    .player-role p { margin: 0; font-size: 18px; }
-    body.modal-open { overflow: hidden; }
-
-    .chat-toggle {
-      position: fixed;
-      right: 20px;
-      bottom: calc(20px + env(safe-area-inset-bottom));
-      z-index: 40;
-      display: inline-flex;
-      align-items: center;
-      gap: 9px;
-      padding: 13px 19px;
-      border: 2px solid var(--blue-deep);
-      border-radius: 999px;
-      color: var(--yellow-ink);
-      background: var(--yellow);
-      font-weight: 800;
-      box-shadow: 0 10px 26px rgba(0, 26, 66, .32);
-      cursor: pointer;
-    }
-    .chat-toggle:hover { transform: translateY(-2px); }
-    .chat-toggle svg { width: 20px; height: 20px; flex: none; }
-    .chat-toggle .chat-close-icon { display: none; }
-    body.chat-open .chat-toggle .chat-open-icon { display: none; }
-    body.chat-open .chat-toggle .chat-close-icon { display: block; }
-    body.chat-open .chat-toggle .chat-toggle-label { display: none; }
-
-    .chat-panel {
-      position: fixed;
-      right: 20px;
-      bottom: calc(82px + env(safe-area-inset-bottom));
-      z-index: 40;
-      display: none;
-      flex-direction: column;
-      width: min(390px, calc(100vw - 32px));
-      height: min(560px, calc(100dvh - 120px));
-      overflow: hidden;
-      background: var(--surface);
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow);
-    }
-    .chat-panel.open { display: flex; }
-    .chat-head { flex: none; padding: 15px 18px 13px; color: white; background: var(--blue-deep); border-bottom: 5px solid var(--yellow); }
-    .chat-head h3 { margin: 0; font: 800 23px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; }
-    .chat-head p { margin: 2px 0 0; color: #cad8ed; font-size: 13.5px; }
-    .chat-messages { flex: 1; overflow-y: auto; padding: 16px 14px 8px; display: flex; flex-direction: column; gap: 10px; }
-    .msg { max-width: 88%; padding: 10px 13px; font-size: 15px; line-height: 1.45; overflow-wrap: break-word; }
-    .msg.bot { align-self: flex-start; background: var(--surface-2); border: 1px solid var(--line); border-radius: 4px 14px 14px 14px; }
-    .msg.user { align-self: flex-end; color: white; background: var(--blue); border-radius: 14px 4px 14px 14px; }
-    .msg.bot strong { color: var(--blue); }
-    .msg ul { margin: 6px 0 2px; padding-left: 18px; }
-    .msg li { margin: 2px 0; }
-    .chat-chips { flex: none; display: flex; gap: 7px; flex-wrap: wrap; padding: 8px 14px 4px; }
-    .chat-chip {
-      padding: 6px 11px;
-      border: 1px solid var(--blue);
-      border-radius: 999px;
-      color: var(--blue);
-      background: transparent;
-      font-size: 13.5px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-    .chat-chip:hover { background: var(--blue-soft); }
-    .chat-form { flex: none; display: flex; gap: 8px; padding: 12px 14px calc(12px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); }
-    .chat-form input {
-      flex: 1; min-width: 0;
-      padding: 11px 13px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      color: var(--ink);
-      background: var(--paper);
-      font: inherit;
-      font-size: 15px;
-    }
-    .chat-form input:focus-visible { outline: 3px solid var(--yellow); outline-offset: 1px; }
-    .chat-send {
-      flex: none;
-      width: 44px; height: 44px;
-      display: grid; place-items: center;
-      border: 0; border-radius: 50%;
-      color: var(--yellow-ink);
-      background: var(--yellow);
-      cursor: pointer;
-    }
-    .chat-send svg { width: 19px; height: 19px; }
-    .chat-send:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
-
-    @media (max-width: 860px) {
-      .hero-inner { grid-template-columns: 1fr; }
-      .coach-card { justify-self: start; }
-      .formation-layout { grid-template-columns: 1fr; }
-      .tactics-card { position: static; }
-      .slot-card { grid-template-columns: 1fr; }
-      .slots { grid-template-columns: repeat(3, 1fr); }
-    }
-    @media (max-width: 650px) {
-      .hero { padding-top: 30px; }
-      .hero-inner { gap: 24px; }
-      h1 { font-size: clamp(44px, 17vw, 64px); }
-      main { padding: 34px 14px 54px; }
-      .section-heading { display: block; }
-      .section-heading p { margin-top: 8px; }
-      .pitch { min-height: 570px; border-width: 5px; aspect-ratio: 3 / 4.6; }
-      .pitch-lines { inset: 12px; }
-      .box.top { top: 12px; }
-      .box.bottom { bottom: 12px; }
-      .player { width: 72px; }
-      .disc { width: 41px; }
-      .depth-grid { grid-template-columns: 1fr; }
-      .slot-card { margin-inline: -14px; padding: 24px 14px; }
-      .slots { grid-template-columns: repeat(2, 1fr); }
-      .fixture-grid { grid-template-columns: 1fr; }
-      .fixture { border-right: 0; border-bottom: 1px solid var(--line); }
-      .fixture:last-child { border-bottom: 0; }
-      .player-card { align-self: end; }
-      .modal { padding: 0; align-items: end; }
-      .player-data { grid-template-columns: 1fr; }
-      .player-data div { display: grid; grid-template-columns: 104px 1fr; gap: 8px; padding: 11px 20px; border-right: 0; border-bottom: 1px solid var(--line); }
-      .player-data div:last-child { border-bottom: 0; }
-      .footer { width: calc(100% - 28px); align-items: flex-start; flex-direction: column; }
-      .chat-toggle { right: 14px; bottom: calc(14px + env(safe-area-inset-bottom)); width: 52px; height: 52px; padding: 0; justify-content: center; border-radius: 50%; }
-      .chat-toggle .chat-toggle-label { display: none; }
-      .chat-toggle svg { width: 24px; height: 24px; }
-      .chat-panel { right: 0; left: 0; bottom: 0; width: 100%; height: min(78dvh, 620px); border-left: 0; border-right: 0; border-bottom: 0; }
-      body.chat-open .chat-toggle { bottom: auto; top: calc(10px + env(safe-area-inset-top)); right: 10px; z-index: 41; padding: 10px 13px; }
-    }
-    @media (max-width: 390px) {
-      .pitch { min-height: 535px; }
-      .player { width: 66px; }
-      .player-name { font-size: 10px; }
-      .disc { width: 38px; }
-    }
-    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .news-live-tag::before { animation: none; } }
-  </style>
-</head>
-<body>
-<div class="page">
-  <header class="hero">
-    <div class="hero-inner">
-      <div>
-        <div class="kicker">11 Oct 2026 · Season opener</div>
-        <h1>A Winning 4–3–3</h1>
-        <p>Kerala Blasters opened the season with a 2–0 away win over Inter Kashi.</p>
-      </div>
-      <div class="coach-card">
-        <span>Head coach</span>
-        <strong>Ashley Westwood</strong>
-        <span>Starting structure</span>
-      </div>
-    </div>
-  </header>
-
-  <main>
-    <div class="shell">
-      <section aria-labelledby="formation-title">
-        <div class="section-heading">
-          <h2 id="formation-title">Starting XI</h2>
-          <p>Westwood’s starting 4–3–3. Tap any player for their match role.</p>
-        </div>
-        <div class="formation-layout">
-          <div class="pitch-panel">
-            <div class="formation-controls" aria-label="Formation">
-              <span class="formation-status">4–3–3</span>
-            </div>
-            <div class="pitch" id="pitch" aria-label="Interactive football pitch showing Kerala Blasters' 4-3-3 starting eleven">
-              <div class="pitch-lines"></div>
-              <div class="box top"></div><div class="box bottom"></div>
-              <div class="goal top"></div><div class="goal bottom"></div>
-            </div>
-            <div class="legend">
-              <span><i class="tap-dot"></i> Tap for player card</span>
-              <span><i class="foreign-dot">F</i> Counted foreign slot</span>
-            </div>
-          </div>
-
-          <aside class="tactics-card" aria-labelledby="tactics-title">
-            <header>
-              <h3 id="tactics-title">Match report</h3>
-              <p>Inter Kashi 0–2 Kerala Blasters</p>
-            </header>
-            <ol class="tactics-list">
-              <li><b>18′</b><span><strong>Vibin Mohanan</strong> scored, assisted by Korou Singh.</span></li>
-              <li><b>46′</b><span><strong>Yansane</strong> replaced Kosovic; <strong>Paul</strong> replaced Korou.</span></li>
-              <li><b>66′</b><span><strong>Sanan</strong> replaced Vibin.</span></li>
-              <li><b>67′</b><span><strong>Ebindas</strong> replaced Sreekuttan.</span></li>
-              <li><b>87′</b><span><strong>Sandeep</strong> replaced Sumit Sharma.</span></li>
-              <li><b>90+4′</b><span><strong>Andre Green</strong> sealed the win.</span></li>
-            </ol>
-          </aside>
-        </div>
-      </section>
-
-      <section class="slot-card" aria-labelledby="slots-title">
-        <div class="slot-count">
-          <strong id="slots-title">5 / 6</strong>
-          <span>Foreign-player slots filled</span>
-        </div>
-        <div class="slots" aria-label="Foreign-player slot tracker">
-          <div class="slot"><b>Andre Green</b><span>England</span></div>
-          <div class="slot"><b>James Bolton</b><span>England</span></div>
-          <div class="slot"><b>Nebojsa Kosovic</b><span>Montenegro</span></div>
-          <div class="slot"><b>Momo Yansane</b><span>Guinea</span></div>
-          <div class="slot"><b>Fallou Ndiaye</b><span>Senegal</span></div>
-          <div class="slot open">OPEN</div>
-        </div>
-      </section>
-
-      <section aria-labelledby="depth-title">
-        <div class="section-heading">
-          <h2 id="depth-title">Matchday squad</h2>
-          <p>The confirmed starters and substitutes for the 2–0 opener.</p>
-        </div>
-        <div class="depth-grid">
-          <article class="depth-group">
-            <h3>Starting XI</h3>
-            <div class="depth-body">
-              <div class="depth-label">4–3–3</div>
-              <div class="name-list">
-                <span class="chip">31 Arsh Anwer Shaikh</span><span class="chip">5 Sumit Sharma</span><span class="chip">13 James Bolton <i class="f">F</i></span><span class="chip">27 Aibanbha Kupar Dohling</span><span class="chip">4 Ruivah Hormipam</span><span class="chip">6 Freddy Lallawmawma</span><span class="chip">23 Nebojsa Kosovic <i class="f">F</i></span><span class="chip">8 Vibin Mohanan</span><span class="chip">7 Korou Singh Thingujam</span><span class="chip">9 Andre Green <i class="f">F</i></span><span class="chip">45 Sreekuttan MS</span>
-              </div>
-            </div>
-          </article>
-          <article class="depth-group">
-            <h3>Bench</h3>
-            <div class="depth-body">
-              <div class="depth-label">Nine substitutes</div>
-              <div class="name-list">
-                <span class="chip">Amrinder Singh (GK)</span><span class="chip">Sandeep Singh</span><span class="chip">Mohammed Sanan K</span><span class="chip">Sahil Tavora</span><span class="chip">Paul Ramfangzauva</span><span class="chip">Jaganath Jayan</span><span class="chip">Ramhlunchhunga</span><span class="chip">Ebindas Yesudasan</span><span class="chip">Momo Yansane <i class="f">F</i></span>
-              </div>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      <section aria-labelledby="fixtures-title">
-        <div class="section-heading">
-          <h2 id="fixtures-title">Opening run</h2>
-          <p>The opener is won; next comes another away trip before Kochi’s first home night.</p>
-        </div>
-        <div class="fixture-grid">
-          <article class="fixture">
-            <div class="fixture-top"><span>Sun 11 Oct · Full time</span><span class="venue-tag">Won</span></div>
-            <div class="teams">Inter Kashi<span class="vs">0–2</span>Kerala Blasters</div>
-            <p>Vibin Mohanan 18′ · Andre Green 90+4′</p>
-          </article>
-          <article class="fixture">
-            <div class="fixture-top"><span>Sun 18 Oct · 19:30 IST</span><span class="venue-tag">Away</span></div>
-            <div class="teams">NorthEast United<span class="vs">vs</span>Kerala Blasters</div>
-            <p>Guwahati</p>
-          </article>
-          <article class="fixture">
-            <div class="fixture-top"><span>Sun 25 Oct · 19:30 IST</span><span class="venue-tag">Home</span></div>
-            <div class="teams">Kerala Blasters<span class="vs">vs</span>Mumbai City</div>
-            <p>Kochi · First home game</p>
-          </article>
-        </div>
-      </section>
-
-      <section aria-labelledby="news-title">
-        <div class="section-heading">
-          <h2 id="news-title">Live News</h2>
-          <p><span class="news-live-tag">Live</span><br>Latest Kerala Blasters headlines, refreshed automatically. <span id="newsStamp">Feed updated: —</span></p>
-        </div>
-        <div id="newsFeed">
-          <div class="news-fallback">News feed is being set up — check back shortly</div>
-        </div>
-      </section>
-    </div>
-  </main>
-
-  <footer class="footer">
-    <strong>Updated 16 Oct 2026</strong>
-    <span>Opener XI · 4–3–3</span>
-  </footer>
+<html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<meta name="color-scheme" content="light dark"/><link rel="icon" href="data:,"/>
+<title>Blasters Squad Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Source+Sans+3:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light dark;--ink:#071c43;--muted:#49617f;--paper:#eef3fa;--surface:#fff;--surface2:#e6edf6;--line:#c6d2e2;--blue:#043b91;--deep:#041e4a;--deep2:#062a63;--yellow:#ffd928;--yink:#292100;--pitch:#0b7a48;--pitch2:#08643d;--pline:rgba(255,255,255,.72);--shadow:0 18px 48px rgba(0,33,86,.16);--danger:#c34526;--ok:#0c7b4c}
+@media(prefers-color-scheme:dark){:root{--ink:#f2f7ff;--muted:#aebcd0;--paper:#050f24;--surface:#0b1c38;--surface2:#122847;--line:#29415f;--blue:#7dacf2;--deep:#030f29;--deep2:#071c42;--shadow:0 18px 48px rgba(0,0,0,.4);--danger:#ff916f;--ok:#3ecf8e}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font-family:"Source Sans 3",sans-serif;font-size:16px;line-height:1.5}
+button{font:inherit}button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--yellow);outline-offset:2px}
+h1,h2,h3,p{margin-top:0}.wrap{width:min(1140px,100%);margin:0 auto;padding:0 20px}
+/* NAV */
+.nav{position:sticky;top:0;z-index:30;background:rgba(4,30,74,.96);backdrop-filter:blur(8px);border-bottom:4px solid var(--yellow)}
+.nav-in{display:flex;align-items:center;gap:6px;overflow-x:auto;scrollbar-width:none;padding:10px 0}
+.nav-in::-webkit-scrollbar{display:none}
+.nav b{color:#fff;font:800 20px/1 "Barlow Condensed";text-transform:uppercase;letter-spacing:.04em;margin-right:12px;white-space:nowrap}
+.nav b i{color:var(--yellow);font-style:normal}
+.nav a{color:#d7e4f6;text-decoration:none;font-weight:700;font-size:14.5px;padding:8px 13px;border-radius:999px;white-space:nowrap}
+.nav a:hover{background:var(--yellow);color:var(--yink)}
+/* HERO */
+.hero{position:relative;overflow:hidden;color:#fff;background:radial-gradient(900px 420px at 85% -10%,rgba(255,217,40,.35),transparent 60%),linear-gradient(120deg,var(--deep),var(--deep2) 55%,#0a3f8f);border-bottom:7px solid var(--yellow);padding:clamp(36px,6vw,72px) 0 clamp(44px,6vw,76px)}
+.hero::before{content:"";position:absolute;inset:-40%;background:conic-gradient(from 0deg at 70% 30%,transparent 0 40deg,rgba(255,255,255,.06) 40deg 55deg,transparent 55deg 140deg,rgba(255,217,40,.07) 140deg 155deg,transparent 155deg);animation:spin 26s linear infinite;pointer-events:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hero-in{position:relative;display:grid;grid-template-columns:1.25fr .75fr;gap:36px;align-items:end}
+.kicker{display:inline-flex;gap:10px;align-items:center;color:var(--yellow);font:700 15px/1 "Barlow Condensed";letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px}
+.kicker::before{content:"";width:34px;height:4px;background:currentColor}
+h1{font:800 clamp(46px,7vw,84px)/.88 "Barlow Condensed";text-transform:uppercase;letter-spacing:-.03em;margin-bottom:12px}
+.hero p{color:#dce8f8;font-size:clamp(17px,2vw,21px);max-width:620px;margin:0}
+.coach{background:rgba(1,16,44,.72);border-top:5px solid var(--yellow);padding:20px 22px}
+.coach span{color:#cfe0f5;display:block}.coach strong{display:block;color:var(--yellow);font:800 28px/1.05 "Barlow Condensed";text-transform:uppercase;margin:2px 0 8px}
+/* COUNTDOWN */
+.count{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap}
+.count div{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.25);padding:10px 14px;text-align:center;min-width:70px}
+.count b{display:block;font:800 30px/1 "Barlow Condensed";color:var(--yellow)}
+.count span{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#cfe0f5}
+.count-label{color:#fff;font-weight:800;margin-top:20px;text-transform:uppercase;letter-spacing:.06em;font-size:13px}
+/* SECTIONS */
+main{padding:44px 0 70px}.shell{display:grid;gap:52px}
+.shead{display:flex;justify-content:space-between;align-items:end;gap:18px;margin-bottom:18px}
+.shead h2{font:800 clamp(30px,4vw,44px)/1 "Barlow Condensed";text-transform:uppercase;margin:0}
+.shead p{color:var(--muted);max-width:520px;margin:0}
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .6s ease,transform .6s ease}
+.reveal.in{opacity:1;transform:none}
+/* FORMATION */
+.flayout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:24px;align-items:start}
+.seg{display:inline-flex;background:var(--surface2);border:1px solid var(--line);border-radius:999px;padding:4px;margin-bottom:12px;flex-wrap:wrap}
+.seg button{border:0;background:transparent;padding:9px 16px;border-radius:999px;font-weight:800;color:var(--muted);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--yellow);color:var(--yink)}
+.modebar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+.btn{border:2px solid var(--deep);background:var(--surface);color:var(--ink);padding:9px 16px;border-radius:999px;font-weight:800;cursor:pointer}
+.btn.primary{background:var(--yellow);color:var(--yink);border-color:var(--yellow)}
+.btn[aria-pressed="true"]{background:var(--deep);color:#fff}
+.pitch{position:relative;width:100%;aspect-ratio:4/5.15;min-height:600px;overflow:hidden;border:8px solid var(--deep);background:repeating-linear-gradient(0deg,rgba(255,255,255,.055) 0 9.09%,transparent 9.09% 18.18%),linear-gradient(90deg,var(--pitch),var(--pitch2));box-shadow:var(--shadow);isolation:isolate}
+.plines{position:absolute;inset:18px;border:2px solid var(--pline);z-index:0;pointer-events:none}
+.plines::before{content:"";position:absolute;left:-2px;right:-2px;top:50%;border-top:2px solid var(--pline)}
+.plines::after{content:"";position:absolute;width:22%;aspect-ratio:1;left:50%;top:50%;transform:translate(-50%,-50%);border:2px solid var(--pline);border-radius:50%}
+.box{position:absolute;left:28%;width:44%;height:14%;border:2px solid var(--pline);z-index:0;pointer-events:none}.box.t{top:18px;border-top:0}.box.b{bottom:18px;border-bottom:0}
+.player{position:absolute;width:clamp(62px,13vw,94px);padding:0;border:0;background:transparent;color:#fff;cursor:pointer;transform:translate(-50%,-50%);text-align:center;z-index:2;transition:left .65s cubic-bezier(.22,.9,.3,1),top .65s cubic-bezier(.22,.9,.3,1)}
+.disc{position:relative;display:grid;place-items:center;width:clamp(39px,7vw,50px);aspect-ratio:1;margin:0 auto 4px;border:3px solid var(--yellow);border-radius:50%;background:var(--deep);color:#fff;font:800 clamp(13px,3vw,17px)/1 "Barlow Condensed";box-shadow:0 4px 11px rgba(0,0,0,.32)}
+.player.foreign .disc::after{content:"F";position:absolute;right:-4px;top:-4px;width:18px;height:18px;display:grid;place-items:center;border:2px solid var(--deep);border-radius:50%;background:var(--yellow);color:var(--yink);font:800 11px/1 "Source Sans 3"}
+.player.empty .disc{border-style:dashed;background:rgba(1,20,50,.55);color:var(--yellow);font-size:20px}
+.pname{display:block;padding:3px 5px 4px;background:rgba(1,24,58,.92);font:700 clamp(11px,2.2vw,14px)/1.05 "Barlow Condensed";text-transform:uppercase}
+.player:hover .disc{background:var(--yellow);color:var(--yink)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:11px;color:var(--muted);font-size:14px}
+.side{position:sticky;top:74px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);overflow:hidden}
+.side header{padding:20px 22px 14px;background:var(--deep);color:#fff;border-bottom:5px solid var(--yellow)}
+.side h3{margin:0 0 4px;font:800 28px/1 "Barlow Condensed";text-transform:uppercase}
+.side header p{margin:0;color:#cad8ed}
+.tlist{list-style:none;margin:0;padding:8px 22px 20px}
+.tlist li{display:grid;grid-template-columns:50px 1fr;gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}
+.tlist li:last-child{border:0}.tlist b{color:var(--blue);font:800 22px/1 "Barlow Condensed"}
+/* METER */
+.meter-card{background:var(--deep);color:#fff;padding:26px;border-bottom:6px solid var(--yellow)}
+.meter-top{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap}
+.meter-top strong{font:800 52px/.9 "Barlow Condensed";color:var(--yellow);display:block}
+.meter{height:18px;background:#0a326f;border:1px solid #3f5d89;border-radius:999px;overflow:hidden;margin:16px 0 14px}
+.meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ffb300,var(--yellow));transition:width 1.2s ease}
+.slots{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.slot{padding:12px 10px;border:1px solid #3f5d89;background:#0a326f;min-width:0}
+.slot b{display:block;font:700 16px/1.05 "Barlow Condensed";text-transform:uppercase;overflow-wrap:anywhere}
+.slot span{color:#bcd0eb;font-size:12px}
+.slot.open{display:grid;place-items:center;border:2px dashed var(--yellow);color:var(--yellow);background:transparent;font:800 17px/1 "Barlow Condensed";min-height:58px}
+/* COMPARE */
+.cmp{background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);padding:22px}
+.cmp-pick{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center;margin-bottom:18px}
+.cmp-pick select{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);font:inherit;font-weight:700}
+.vs-badge{font:800 22px/1 "Barlow Condensed";background:var(--yellow);color:var(--yink);border-radius:50%;width:44px;height:44px;display:grid;place-items:center}
+.cmp-table{width:100%;border-collapse:collapse}
+.cmp-table th,.cmp-table td{padding:11px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.cmp-table th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.07em;width:26%}
+.cmp-table td{font-weight:700;width:37%}
+/* FIXTURES */
+.fgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--line);background:var(--surface)}
+.fixture{padding:20px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);cursor:pointer;text-align:left;background:transparent;color:var(--ink);width:100%}
+.fixture:hover{background:var(--surface2)}
+.ftop{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:13.5px;margin-bottom:10px}
+.tag{background:var(--yellow);color:var(--yink);padding:2px 7px;font-weight:800;text-transform:uppercase;font-size:12px}
+.teams{font:800 23px/1.05 "Barlow Condensed";text-transform:uppercase}
+.teams .vs{display:block;margin:5px 0;color:var(--muted);font:600 13px/1 "Source Sans 3"}
+.fdetail{display:none;margin-top:12px;color:var(--muted);font-size:14.5px;border-top:1px dashed var(--line);padding-top:10px}
+.fixture.open .fdetail{display:block}
+/* FAN ZONE */
+.fanzone{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.fcard{background:var(--surface);border:1px solid var(--line);box-shadow:0 8px 24px rgba(0,33,86,.07);padding:22px}
+.fcard h3{font:800 26px/1 "Barlow Condensed";text-transform:uppercase;margin:0 0 6px}
+.fcard p{color:var(--muted)}
+.poll-opt{display:block;width:100%;text-align:left;padding:12px 14px;margin:8px 0;border:1px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);font-weight:700;cursor:pointer}
+.poll-opt:hover{border-color:var(--blue)}
+.bar-row{margin:10px 0}.bar-row .bl{display:flex;justify-content:space-between;font-weight:700;font-size:14.5px}
+.bar{height:12px;background:var(--surface2);border-radius:999px;overflow:hidden;margin-top:4px}
+.bar i{display:block;height:100%;background:var(--yellow);border:1.5px solid #c9a400;width:0;transition:width .8s ease}
+.quiz-q{font-weight:800;margin:14px 0 8px}
+.quiz-opt{display:block;width:100%;text-align:left;padding:10px 13px;margin:6px 0;border:1px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);font-weight:600;cursor:pointer}
+.quiz-opt.right{border-color:var(--ok);background:rgba(12,123,76,.14);font-weight:800}
+.quiz-opt.wrong{border-color:var(--danger);background:rgba(195,69,38,.12)}
+.quiz-score{font:800 24px/1.1 "Barlow Condensed";text-transform:uppercase;color:var(--blue)}
+/* NEWS */
+.news-live-tag{display:inline-flex;align-items:center;gap:7px;background:var(--yellow);color:var(--yink);padding:3px 9px;font-weight:800;text-transform:uppercase;font-size:13px}
+.news-live-tag::before{content:"";width:8px;height:8px;border-radius:50%;background:#c34526;animation:pulse 1.8s infinite}
+@keyframes pulse{50%{opacity:.35}}
+.news-list{border:1px solid var(--line);background:var(--surface)}
+.news-item{padding:18px 22px;border-bottom:1px solid var(--line)}.news-item:last-child{border:0}
+.news-meta{display:flex;gap:8px;flex-wrap:wrap;color:var(--muted);font-size:13px;font-weight:700;text-transform:uppercase;margin-bottom:5px}
+.news-meta .ns{color:var(--blue)}
+.news-item h3{margin:0 0 5px;font:700 22px/1.1 "Barlow Condensed";text-transform:uppercase}
+.news-item h3 a{color:var(--ink);text-decoration:none}.news-item h3 a:hover{color:var(--blue);text-decoration:underline}
+.news-item p{margin:0;color:var(--muted);font-size:15px}
+.news-fallback{padding:22px;border:1px dashed var(--line);background:var(--surface);color:var(--muted)}
+footer{border-top:1px solid var(--line);color:var(--muted);padding:24px 0 calc(24px + env(safe-area-inset-bottom));display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}footer strong{color:var(--ink)}
+/* MODALS */
+.modal{position:fixed;inset:0;z-index:50;display:none;place-items:center;padding:20px;background:rgba(0,14,36,.74)}
+.modal.open{display:grid}
+.pcard{position:relative;width:min(480px,100%);max-height:88dvh;overflow:auto;background:var(--surface);color:var(--ink);box-shadow:0 30px 80px rgba(0,0,0,.35)}
+.pcard-head{padding:26px 64px 20px 24px;background:var(--deep);color:#fff;border-bottom:6px solid var(--yellow)}
+.pcard-head .pos{color:var(--yellow);font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.pcard-head h3{margin:3px 0 0;font:800 38px/.95 "Barlow Condensed";text-transform:uppercase}
+.close{position:absolute;top:14px;right:14px;width:40px;height:40px;border:1px solid rgba(255,255,255,.4);border-radius:50%;background:transparent;color:#fff;font-size:24px;cursor:pointer}
+.pdata{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--line)}
+.pdata div{padding:15px;border-right:1px solid var(--line)}.pdata div:last-child{border:0}
+.pdata span{display:block;color:var(--muted);font-size:12px;font-weight:700;text-transform:uppercase}
+.prole{padding:20px 24px 24px}.prole p{margin:0;font-size:17px}
+.pick-list{display:grid;gap:8px;padding:18px 22px 22px;max-height:55dvh;overflow:auto}
+.pick-list button{text-align:left;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);font-weight:700;cursor:pointer}
+.pick-list button small{display:block;color:var(--muted);font-weight:600}
+.pick-list button:disabled{opacity:.45;cursor:not-allowed}
+body.locked{overflow:hidden}
+/* CHAT (unchanged design) */
+.chat-toggle{position:fixed;right:20px;bottom:calc(20px + env(safe-area-inset-bottom));z-index:60;display:inline-flex;align-items:center;gap:9px;padding:13px 19px;border:2px solid var(--deep);border-radius:999px;color:var(--yink);background:var(--yellow);font-weight:800;box-shadow:0 10px 26px rgba(0,26,66,.32);cursor:pointer}
+.chat-toggle svg{width:20px;height:20px}.chat-toggle .ci2{display:none}body.chat-open .chat-toggle .ci1{display:none}body.chat-open .chat-toggle .ci2{display:block}body.chat-open .chat-toggle .clab{display:none}
+.chat-panel{position:fixed;right:20px;bottom:calc(82px + env(safe-area-inset-bottom));z-index:60;display:none;flex-direction:column;width:min(390px,calc(100vw - 32px));height:min(560px,calc(100dvh - 120px));overflow:hidden;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow)}
+.chat-panel.open{display:flex}
+.chat-head{padding:15px 18px 13px;background:var(--deep);color:#fff;border-bottom:5px solid var(--yellow)}
+.chat-head h3{margin:0;font:800 23px/1 "Barlow Condensed";text-transform:uppercase}.chat-head p{margin:2px 0 0;color:#cad8ed;font-size:13.5px}
+.chat-messages{flex:1;overflow-y:auto;padding:16px 14px 8px;display:flex;flex-direction:column;gap:10px}
+.msg{max-width:88%;padding:10px 13px;font-size:15px;line-height:1.45;overflow-wrap:break-word}
+.msg.bot{align-self:flex-start;background:var(--surface2);border:1px solid var(--line);border-radius:4px 14px 14px 14px}
+.msg.user{align-self:flex-end;color:#fff;background:var(--blue);border-radius:14px 4px 14px 14px}
+.msg.bot strong{color:var(--blue)}.msg ul{margin:6px 0 2px;padding-left:18px}
+.chat-chips{display:flex;gap:7px;flex-wrap:wrap;padding:8px 14px 4px}
+.chat-chip{padding:6px 11px;border:1px solid var(--blue);border-radius:999px;color:var(--blue);background:transparent;font-size:13.5px;font-weight:700;cursor:pointer}
+.chat-form{display:flex;gap:8px;padding:12px 14px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line)}
+.chat-form input{flex:1;min-width:0;padding:11px 13px;border:1px solid var(--line);border-radius:999px;background:var(--paper);color:var(--ink);font:inherit;font-size:15px}
+.chat-send{width:44px;height:44px;display:grid;place-items:center;border:0;border-radius:50%;background:var(--yellow);color:var(--yink);cursor:pointer}.chat-send svg{width:19px;height:19px}
+@media(max-width:900px){.hero-in{grid-template-columns:1fr}.flayout{grid-template-columns:1fr}.side{position:static}.slots{grid-template-columns:repeat(3,1fr)}.fgrid{grid-template-columns:1fr 1fr}.fanzone{grid-template-columns:1fr}}
+@media(max-width:620px){.nav-in{flex-wrap:wrap;overflow-x:visible}.wrap{padding:0 14px}main{padding:32px 0 54px}.shead{display:block}.shead p{margin-top:8px}.pitch{min-height:540px;border-width:5px}.fgrid{grid-template-columns:1fr}.slots{grid-template-columns:repeat(2,1fr)}.cmp-pick{grid-template-columns:1fr}.vs-badge{margin:0 auto}.pdata{grid-template-columns:1fr}.pdata div{border-right:0;border-bottom:1px solid var(--line)}.modal{padding:0;align-items:end}.chat-toggle{right:14px;bottom:calc(14px + env(safe-area-inset-bottom));width:52px;height:52px;padding:0;justify-content:center;border-radius:50%}.chat-toggle .clab{display:none}.chat-panel{right:0;left:0;bottom:0;width:100%;height:min(78dvh,620px);border:0}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.hero::before{animation:none}.player{transition:none}.reveal{opacity:1;transform:none;transition:none}}
+</style></head><body>
+<nav class="nav"><div class="wrap nav-in"><b>Blasters <i>Hub</i></b><a href="#squad">Squad</a><a href="#fixtures">Fixtures</a><a href="#news">News</a><a href="#fanzone">Fan Zone</a><a href="#" id="navAssistant">Assistant</a></div></nav>
+<header class="hero"><div class="wrap hero-in"><div>
+<div class="kicker">ISL 2026–27 · Season underway</div>
+<h1>Matchday Mode: On</h1>
+<p>Kerala Blasters opened with a 2–0 away win over Inter Kashi. Explore the squad, build your own XI, compare players and count down to Guwahati.</p>
+<div class="count-label">Next match · NorthEast United vs Kerala Blasters · 18 Oct 2026, 7:30 PM IST · Guwahati</div>
+<div class="count" id="countdown" aria-live="off"><div><b id="cdD">–</b><span>Days</span></div><div><b id="cdH">–</b><span>Hours</span></div><div><b id="cdM">–</b><span>Mins</span></div><div><b id="cdS">–</b><span>Secs</span></div></div>
 </div>
-
-<div class="modal" id="playerModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modalName">
-  <article class="player-card">
-    <div class="player-card-head">
-      <div class="position" id="modalPosition"></div>
-      <h3 id="modalName"></h3>
-      <button class="close" type="button" aria-label="Close player card">×</button>
-    </div>
-    <div class="player-data">
-      <div><span>Shirt</span><strong id="modalShirt"></strong></div>
-      <div><span>Status</span><strong id="modalStatus"></strong></div>
-      <div><span>Match</span><strong id="modalMatch"></strong></div>
-    </div>
-    <div class="player-role">
-      <span>Role in the opener</span>
-      <p id="modalRole"></p>
-    </div>
-  </article>
+<div class="coach"><span>Head coach</span><strong>Ashley Westwood</strong><span>Captain · Adrián Luna</span><span>Home · Jawaharlal Nehru Stadium, Kochi</span></div>
+</div></header>
+<main><div class="wrap shell">
+<section id="squad" class="reveal" aria-labelledby="sqT">
+<div class="shead"><h2 id="sqT">Formation Lab</h2><p>Switch shapes with animated movement, tap a player for their card — or build your own XI and download it.</p></div>
+<div class="flayout"><div>
+<div class="seg" role="group" aria-label="Formation">
+<button type="button" data-form="433" aria-pressed="true">4–3–3</button><button type="button" data-form="442" aria-pressed="false">4–4–2</button><button type="button" data-form="352" aria-pressed="false">3–5–2</button>
 </div>
-
-<button class="chat-toggle" id="chatToggle" type="button" aria-expanded="false" aria-controls="chatPanel" aria-label="Open squad assistant chat">
-  <svg class="chat-open-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-  <svg class="chat-close-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
-  <span class="chat-toggle-label">Ask about the squad</span>
-</button>
-
-<section class="chat-panel" id="chatPanel" aria-label="Squad assistant chat" aria-hidden="true">
-  <div class="chat-head">
-    <h3>Blasters Assistant</h3>
-    <p>Ask about the squad, club history, the stadium, coach, fixtures and more.</p>
-  </div>
-  <div class="chat-messages" id="chatMessages" role="log" aria-live="polite" aria-label="Chat messages"></div>
-  <div class="chat-chips" id="chatChips">
-    <button class="chat-chip" type="button" data-q="What is the starting XI?">Starting XI</button>
-    <button class="chat-chip" type="button" data-q="Tell me about the club's history">Club history</button>
-    <button class="chat-chip" type="button" data-q="How many ISL finals have the Blasters played?">ISL finals</button>
-    <button class="chat-chip" type="button" data-q="Where do the Blasters play and who are Manjappada?">Stadium &amp; fans</button>
-    <button class="chat-chip" type="button" data-q="Who is Ashley Westwood?">Coach Westwood</button>
-    <button class="chat-chip" type="button" data-q="Which foreign players are in the squad?">Foreign slots</button>
-    <button class="chat-chip" type="button" data-q="Who are the new signings this season?">New signings</button>
-    <button class="chat-chip" type="button" data-q="What is the next match?">Next match</button>
-    <button class="chat-chip" type="button" data-q="What are the latest headlines?">Latest headlines</button>
-  </div>
-  <form class="chat-form" id="chatForm">
-    <input id="chatInput" type="text" autocomplete="off" placeholder="Ask about players, history, stadium, fixtures…" aria-label="Type your question" />
-    <button class="chat-send" type="submit" aria-label="Send message">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/></svg>
-    </button>
-  </form>
+<div class="modebar">
+<button class="btn" type="button" id="modeBuild" aria-pressed="false">Build Your XI</button>
+<button class="btn" type="button" id="resetXI">Reset to actual XI</button>
+<button class="btn primary" type="button" id="dlXI" style="display:none">Download my XI (PNG)</button>
+<span id="buildHint" style="display:none;color:var(--muted);font-weight:700">Tap a slot on the pitch, then pick a player.</span>
+</div>
+<div class="pitch" id="pitch" aria-label="Interactive football pitch"><div class="plines"></div><div class="box t"></div><div class="box b"></div></div>
+<div class="legend"><span>● Tap a player / slot</span><span><b style="background:var(--yellow);color:var(--yink);border-radius:50%;padding:1px 6px">F</b> Foreign slot</span><span id="xiCount" style="font-weight:800"></span></div>
+</div>
+<aside class="side" aria-labelledby="mrT"><header><h3 id="mrT">Match Report</h3><p>Inter Kashi 0–2 Kerala Blasters · 11 Oct 2026</p></header>
+<ol class="tlist">
+<li><b>18′</b><span><strong>Vibin Mohanan</strong> scored, assisted by Korou Singh.</span></li>
+<li><b>46′</b><span><strong>Yansané</strong> replaced Kosović; <strong>Paul</strong> replaced Korou.</span></li>
+<li><b>66′</b><span><strong>Sanan</strong> replaced Vibin.</span></li>
+<li><b>67′</b><span><strong>Ebindas</strong> replaced Sreekuttan.</span></li>
+<li><b>87′</b><span><strong>Sandeep</strong> replaced Sumit Sharma.</span></li>
+<li><b>90+4′</b><span><strong>Andre Green</strong> sealed the win.</span></li>
+</ol></aside></div>
 </section>
-
-<script>
-(function () {
-  var players = {
-    arsh: { name: "Arsh Anwer Shaikh", short: "Arsh", initials: "31", shirt: "31", status: "Starter", match: "Full time", position: "Goalkeeper", role: "Started in goal for the season-opening win.", foreign: false },
-    sumit: { name: "Brahmacharimayum Sumit Sharma", short: "Sumit", initials: "5", shirt: "5", status: "Starter", match: "Off 87′", position: "Right-back", role: "Started at right-back; replaced by Sandeep Singh in the 87th minute.", foreign: false },
-    bolton: { name: "James Bolton", short: "Bolton", initials: "13", shirt: "13", status: "Starter", match: "Full time", position: "Centre-back", role: "Started at centre-back in the clean-sheet win.", foreign: true },
-    aiban: { name: "Aibanbha Kupar Dohling", short: "Aiban", initials: "27", shirt: "27", status: "Starter", match: "Full time", position: "Centre-back", role: "Started at centre-back in the clean-sheet win.", foreign: false },
-    hormipam: { name: "Ruivah Hormipam", short: "Hormipam", initials: "4", shirt: "4", status: "Starter", match: "Full time", position: "Left-back", role: "Started at left-back in the 4–3–3.", foreign: false },
-    freddy: { name: "Freddy Lallawmawma", short: "Freddy", initials: "6", shirt: "6", status: "Starter", match: "Full time", position: "Midfielder", role: "Started in Westwood’s three-player midfield.", foreign: false },
-    kosovic: { name: "Nebojsa Kosovic", short: "Kosovic", initials: "23", shirt: "23", status: "Starter", match: "Off 46′", position: "Midfielder", role: "Started in midfield; replaced by Momo Yansane at half-time.", foreign: true },
-    vibin: { name: "Vibin Mohanan", short: "Vibin", initials: "8", shirt: "8", status: "Starter", match: "Goal 18′", position: "Midfielder", role: "Opened the scoring from Korou Singh’s assist; replaced by Sanan in the 66th minute.", foreign: false },
-    korou: { name: "Korou Singh Thingujam", short: "Korou", initials: "7", shirt: "7", status: "Starter", match: "Assist 18′", position: "Right wing", role: "Assisted Vibin’s opener; replaced by Paul Ramfangzauva at half-time.", foreign: false },
-    green: { name: "Andre Green", short: "Green", initials: "9", shirt: "9", status: "Starter", match: "Goal 90+4′", position: "Left wing", role: "Started from the left and sealed the 2–0 win in stoppage time.", foreign: true },
-    sreekuttan: { name: "Sreekuttan MS", short: "Sreekuttan", initials: "45", shirt: "45", status: "Starter", match: "Off 67′", position: "Striker", role: "Led the line; replaced by Ebindas Yesudasan in the 67th minute.", foreign: false }
-  };
-
-  var formation = {
-    arsh: [50, 91],
-    hormipam: [16, 72], aiban: [39, 76], bolton: [61, 76], sumit: [84, 72],
-    freddy: [27, 51], kosovic: [50, 58], vibin: [73, 51],
-    green: [18, 21], sreekuttan: [50, 16], korou: [82, 21]
-  };
-
-  var pitch = document.getElementById("pitch");
-  var modal = document.getElementById("playerModal");
-  var lastFocused = null;
-
-  Object.keys(players).forEach(function (id) {
-    var player = players[id];
-    var button = document.createElement("button");
-    button.type = "button";
-    button.className = "player" + (player.foreign ? " foreign" : "");
-    button.dataset.player = id;
-    button.setAttribute("aria-label", "Open player card for " + player.name);
-    button.innerHTML = '<span class="disc">' + player.initials + '</span><span class="player-name">' + player.short + '</span>';
-    button.addEventListener("click", function () { openPlayer(id, button); });
-    pitch.appendChild(button);
-  });
-
-  Object.keys(formation).forEach(function (id) {
-    var node = pitch.querySelector('[data-player="' + id + '"]');
-    node.style.left = formation[id][0] + "%";
-    node.style.top = formation[id][1] + "%";
-  });
-
-  function openPlayer(id, source) {
-    var p = players[id];
-    lastFocused = source;
-    document.getElementById("modalPosition").textContent = p.position;
-    document.getElementById("modalName").textContent = p.name;
-    document.getElementById("modalShirt").textContent = p.shirt;
-    document.getElementById("modalStatus").textContent = p.status;
-    document.getElementById("modalMatch").textContent = p.match;
-    document.getElementById("modalRole").textContent = p.role;
-    modal.classList.add("open");
-    modal.setAttribute("aria-hidden", "false");
-    document.body.classList.add("modal-open");
-    modal.querySelector(".close").focus();
-  }
-
-  function closePlayer() {
-    modal.classList.remove("open");
-    modal.setAttribute("aria-hidden", "true");
-    document.body.classList.remove("modal-open");
-    if (lastFocused) lastFocused.focus();
-  }
-
-  modal.querySelector(".close").addEventListener("click", closePlayer);
-  modal.addEventListener("click", function (event) { if (event.target === modal) closePlayer(); });
-  document.addEventListener("keydown", function (event) { if (event.key === "Escape" && modal.classList.contains("open")) closePlayer(); });
-
-})();
-</script>
-
+<section class="reveal"><div class="meter-card"><div class="meter-top"><div><strong>5 / 6</strong><span>Foreign-player slots filled — one still open</span></div><span style="color:#bcd0eb">Green · Bolton · Kosović · Yansané · Ndiaye</span></div>
+<div class="meter"><i id="meterFill"></i></div>
+<div class="slots"><div class="slot"><b>Andre Green</b><span>England</span></div><div class="slot"><b>James Bolton</b><span>England</span></div><div class="slot"><b>Nebojša Kosović</b><span>Montenegro</span></div><div class="slot"><b>Momo Yansané</b><span>Guinea</span></div><div class="slot"><b>Fallou Ndiaye</b><span>Senegal</span></div><div class="slot open">OPEN</div></div></div></section>
+<section aria-labelledby="stT"><div class="shead"><h2 id="stT">Squad Status &amp; Staff</h2><p>Coaching team and the latest verified squad news.</p></div>
+<div class="fanzone"><div class="fcard"><h3>Coaching Staff</h3><p><strong style="color:var(--ink)">Ashley Westwood</strong> — Head Coach<br><strong style="color:var(--ink)">Hasney Aljofree</strong> — Assistant Manager<br><strong style="color:var(--ink)">Amit Rana</strong> — Assistant Coach<br><strong style="color:var(--ink)">Felix D'Souza</strong> — Goalkeeping Coach</p></div>
+<div class="fcard"><h3>Injury News</h3><p><strong style="color:var(--ink)">Bikash Yumnam</strong> (defender) is sidelined with a <strong style="color:var(--ink)">calf injury</strong> and is expected to miss approximately <strong style="color:var(--ink)">one month</strong> (reported ahead of the season opener).<br><br>Club captain: <strong style="color:var(--ink)">Adrián Luna</strong>.</p></div></div></section>
+<section aria-labelledby="cmpT"><div class="shead"><h2 id="cmpT">Player vs Player</h2><p>Side-by-side facts from the verified squad data — no made-up stats.</p></div>
+<div class="cmp"><div class="cmp-pick"><select id="cmpA" aria-label="First player"></select><span class="vs-badge">VS</span><select id="cmpB" aria-label="Second player"></select></div>
+<table class="cmp-table"><tbody id="cmpBody"></tbody></table></div></section>
+<section id="fixtures" class="reveal" aria-labelledby="fxT"><div class="shead"><h2 id="fxT">Match Centre · Fixtures</h2><p>All 12 Phase-1 fixtures. Tap any fixture for venue, kickoff and home/away details.</p></div>
+<div class="fgrid" id="fixtureGrid"></div></section>
+<section id="fanzone" class="reveal" aria-labelledby="fzT"><div class="shead"><h2 id="fzT">Fan Zone</h2><p>Have your say, then test your Blasters knowledge.</p></div>
+<div class="fanzone">
+<div class="fcard"><h3>Fan Poll</h3><p><strong style="color:var(--ink)">Who should start up front vs NorthEast United?</strong></p><div id="pollArea"></div></div>
+<div class="fcard"><h3>Blasters Trivia</h3><p>Five questions, all from this season's verified facts.</p><div id="quizArea"></div></div>
+</div></section>
+<section id="news" class="reveal" aria-labelledby="news-title"><div class="shead"><h2 id="news-title">Live News</h2><p><span class="news-live-tag">Live</span><br>Latest Kerala Blasters headlines. <span id="newsStamp">Feed updated: —</span></p></div>
+<div id="newsFeed"><div class="news-fallback">Loading the latest headlines…</div></div></section>
+</div></main>
+<div class="wrap"><footer><strong>Updated 16 Oct 2026</strong><span>Kerala Blasters FC · ISL 2026–27</span></footer></div>
+<div class="modal" id="playerModal" aria-hidden="true" role="dialog" aria-modal="true"><article class="pcard"><div class="pcard-head"><div class="pos" id="mPos"></div><h3 id="mName"></h3><button class="close" type="button" data-close aria-label="Close">×</button></div><div class="pdata"><div><span>Shirt</span><strong id="mShirt"></strong></div><div><span>Nationality</span><strong id="mNat"></strong></div><div><span>Status</span><strong id="mStatus"></strong></div></div><div class="prole"><p id="mRole"></p></div></article></div>
+<div class="modal" id="pickModal" aria-hidden="true" role="dialog" aria-modal="true"><article class="pcard"><div class="pcard-head"><div class="pos" id="pickPos"></div><h3>Pick a player</h3><button class="close" type="button" data-close aria-label="Close picker">×</button></div><div class="pick-list" id="pickList"></div></article></div>
+<button class="chat-toggle" id="chatToggle" type="button" aria-expanded="false" aria-controls="chatPanel" aria-label="Open squad assistant chat">
+<svg class="ci1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+<svg class="ci2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg><span class="clab">Ask about the squad</span></button>
+<section class="chat-panel" id="chatPanel" aria-label="Squad assistant chat" aria-hidden="true"><div class="chat-head"><h3>Blasters Assistant</h3><p>Ask about the squad, club history, the stadium, coach, fixtures and more.</p></div>
+<div class="chat-messages" id="chatMessages" role="log" aria-live="polite"></div>
+<div class="chat-chips" id="chatChips">
+<button class="chat-chip" type="button" data-q="What is the starting XI?">Starting XI</button>
+<button class="chat-chip" type="button" data-q="Tell me about the club's history">Club history</button>
+<button class="chat-chip" type="button" data-q="How many ISL finals have the Blasters played?">ISL finals</button>
+<button class="chat-chip" type="button" data-q="Where do the Blasters play and who are Manjappada?">Stadium &amp; fans</button>
+<button class="chat-chip" type="button" data-q="Who is Ashley Westwood?">Coach Westwood</button>
+<button class="chat-chip" type="button" data-q="Which foreign players are in the squad?">Foreign slots</button>
+<button class="chat-chip" type="button" data-q="Who are the new signings this season?">New signings</button>
+<button class="chat-chip" type="button" data-q="What is the next match?">Next match</button>
+<button class="chat-chip" type="button" data-q="What are the latest headlines?">Latest headlines</button>
+</div>
+<form class="chat-form" id="chatForm"><input id="chatInput" type="text" autocomplete="off" placeholder="Ask about players, history, stadium, fixtures…" aria-label="Type your question"/><button class="chat-send" type="submit" aria-label="Send message"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/></svg></button></form></section>
 <!-- ════════════════════════════════════════════════════════════════════════
      KBFC KNOWLEDGE BASE · AUTO-UPDATED DATA BLOCK
      The sync pipeline (daily checks + after every Blasters match) replaces
@@ -871,7 +380,6 @@ var KBFC_KB = {
 };
 /* KB-DATA-END */
 </script>
-
 <script>
 (function () {
   var KB = window.KBFC_KB;
@@ -1091,6 +599,120 @@ var KBFC_KB = {
 </script>
 
 <script>
+(function(){
+var KB=window.KBFC_KB; if(!KB) return;
+var squad=KB.squad;
+function byKey(k){for(var i=0;i<squad.length;i++){if(squad[i].keys.indexOf(k)>-1)return squad[i];}return null;}
+var XIkeys=["arsh","hormipam","aiban","bolton","sumit","freddy","kosovic","vibin","green","sreekuttan","korou"];
+var XI=XIkeys.map(byKey);
+/* slot definitions per formation: [group, label, x, y, defaultXIindex] */
+var FORMS={
+ "433":[["GK","GK",50,91,0],["DEF","LB",16,72,1],["DEF","CB",39,76,2],["DEF","CB",61,76,3],["DEF","RB",84,72,4],["MID","CM",27,52,5],["MID","CM",50,58,6],["MID","CM",73,52,7],["FWD","LW",18,21,8],["FWD","ST",50,15,9],["FWD","RW",82,21,10]],
+ "442":[["GK","GK",50,91,0],["DEF","LB",16,72,1],["DEF","CB",39,76,2],["DEF","CB",61,76,3],["DEF","RB",84,72,4],["MID","LM",15,47,8],["MID","CM",38,55,5],["MID","CM",62,55,6],["MID","RM",85,47,10],["FWD","ST",35,17,7],["FWD","ST",65,17,9]],
+ "352":[["GK","GK",50,91,0],["DEF","CB",26,75,1],["DEF","CB",50,78,2],["DEF","CB",74,75,3],["MID","LWB",12,48,8],["MID","CM",34,56,5],["MID","CM",50,62,6],["MID","CM",66,56,7],["MID","RWB",88,48,10],["FWD","ST",35,17,9],["FWD","ST",65,17,4]]
+};
+var curForm="433", buildMode=false, myXI=null, slotPlayers=[];
+var pitch=document.getElementById("pitch");
+var slotEls=[];
+function groupOf(p){ if(p.position==="Goalkeeper")return "GK"; if(/back|Defender/.test(p.position))return "DEF"; if(p.position==="Midfielder")return "MID"; return "FWD"; }
+function fits(slotGroup,p){ var g=groupOf(p); if(slotGroup==="GK")return g==="GK"; if(slotGroup==="DEF")return g==="DEF"; if(slotGroup==="MID")return g==="MID"||/wing/.test(p.position); return g==="FWD"||g==="MID"; }
+function shortName(p){ var parts=p.name.split(" "); return parts.length>1?parts[parts.length-1]:p.name; }
+function renderPitch(){
+  slotEls.forEach(function(e){e.remove();}); slotEls=[];
+  var defs=FORMS[curForm];
+  defs.forEach(function(d,idx){
+    var p=buildMode?slotPlayers[idx]:XI[d[4]];
+    var b=document.createElement("button"); b.type="button"; b.className="player"+(p&&p.foreign?" foreign":"")+((buildMode&&!p)?" empty":"");
+    b.style.left=d[2]+"%"; b.style.top=d[3]+"%";
+    if(p){ b.innerHTML='<span class="disc">'+(p.shirt||"•")+'</span><span class="pname">'+shortName(p)+'</span>'; b.setAttribute("aria-label",(buildMode?"Change slot ":"Player card: ")+p.name); }
+    else { b.innerHTML='<span class="disc">+</span><span class="pname">'+d[1]+'</span>'; b.setAttribute("aria-label","Pick a player for "+d[1]); }
+    b.addEventListener("click",function(){ if(buildMode) openPick(idx); else if(p) openCard(p); });
+    pitch.appendChild(b); slotEls.push(b);
+  });
+  var filled=buildMode?slotPlayers.filter(Boolean).length:11;
+  document.getElementById("xiCount").textContent=buildMode?("Your XI: "+filled+" / 11 picked"):"";
+}
+document.querySelectorAll("[data-form]").forEach(function(btn){ btn.addEventListener("click",function(){ curForm=btn.getAttribute("data-form"); document.querySelectorAll("[data-form]").forEach(function(x){x.setAttribute("aria-pressed",x===btn?"true":"false");}); if(buildMode){ /* keep picks, re-map by slot */ } renderPitch(); }); });
+/* player card */
+var pm=document.getElementById("playerModal");
+function openCard(p){ document.getElementById("mPos").textContent=p.position+(p.captain?" · Club captain":"")+(p.injured?" · Injured":"");
+ document.getElementById("mName").textContent=p.name;
+ document.getElementById("mShirt").textContent=p.shirt||"—"; document.getElementById("mNat").textContent=p.nationality||"—";
+ document.getElementById("mStatus").textContent=p.status==="starter"?"Starter":p.status==="bench"?"Bench (opener)":"First-team squad";
+ document.getElementById("mRole").textContent=(p.bg||"")+(p.note?" "+p.note:"");
+ pm.classList.add("open"); pm.setAttribute("aria-hidden","false"); document.body.classList.add("locked"); }
+function closeModals(){ document.querySelectorAll(".modal").forEach(function(m){m.classList.remove("open");m.setAttribute("aria-hidden","true");}); document.body.classList.remove("locked"); }
+document.querySelectorAll("[data-close]").forEach(function(b){b.addEventListener("click",closeModals);});
+document.querySelectorAll(".modal").forEach(function(m){m.addEventListener("click",function(e){if(e.target===m)closeModals();});});
+document.addEventListener("keydown",function(e){if(e.key==="Escape")closeModals();});
+/* Build XI */
+var pickModal=document.getElementById("pickModal"), pickSlot=0;
+function openPick(idx){ pickSlot=idx; var d=FORMS[curForm][idx]; document.getElementById("pickPos").textContent="Slot: "+d[1];
+ var list=document.getElementById("pickList"); list.innerHTML="";
+ squad.filter(function(p){return fits(d[0],p);}).forEach(function(p){ var used=slotPlayers.indexOf(p)>-1; var b=document.createElement("button"); b.type="button"; b.disabled=used; b.innerHTML=p.name+"<small>"+p.position+(p.shirt?" · Shirt "+p.shirt:"")+(p.foreign?" · Foreign":"")+(p.captain?" · Captain":"")+(p.injured?" · Injured":"")+(used?" · Already picked":"")+"</small>"; b.addEventListener("click",function(){ slotPlayers[pickSlot]=p; closeModals(); renderPitch(); }); list.appendChild(b); });
+ if(slotPlayers[idx]){ var c=document.createElement("button"); c.type="button"; c.innerHTML="Clear this slot"; c.addEventListener("click",function(){slotPlayers[pickSlot]=null; closeModals(); renderPitch();}); list.appendChild(c); }
+ pickModal.classList.add("open"); pickModal.setAttribute("aria-hidden","false"); document.body.classList.add("locked"); }
+var modeBtn=document.getElementById("modeBuild");
+modeBtn.addEventListener("click",function(){ buildMode=!buildMode; modeBtn.setAttribute("aria-pressed",buildMode?"true":"false"); modeBtn.textContent=buildMode?"Back to Formation Lab":"Build Your XI"; document.getElementById("dlXI").style.display=buildMode?"":"none"; document.getElementById("buildHint").style.display=buildMode?"":"none"; if(buildMode&&!myXI){ slotPlayers=FORMS[curForm].map(function(d){return XI[d[4]];}); myXI=slotPlayers; } if(buildMode) slotPlayers=myXI; renderPitch(); });
+document.getElementById("resetXI").addEventListener("click",function(){ slotPlayers=FORMS[curForm].map(function(d){return XI[d[4]];}); myXI=slotPlayers; if(!buildMode){buildMode=true; modeBtn.click(); modeBtn.click(); buildMode=true; modeBtn.setAttribute("aria-pressed","true"); modeBtn.textContent="Back to Formation Lab"; document.getElementById("dlXI").style.display=""; document.getElementById("buildHint").style.display=""; slotPlayers=myXI;} renderPitch(); });
+document.getElementById("dlXI").addEventListener("click",function(){
+ var c=document.createElement("canvas"); c.width=900; c.height=1150; var x=c.getContext("2d");
+ x.fillStyle="#0b7a48"; x.fillRect(0,0,900,1150); x.fillStyle="#08643d"; for(var i=0;i<6;i++) x.fillRect(0,i*192,900,96);
+ x.strokeStyle="rgba(255,255,255,.8)"; x.lineWidth=4; x.strokeRect(36,36,828,1078); x.beginPath(); x.moveTo(36,575); x.lineTo(864,575); x.stroke(); x.beginPath(); x.arc(450,575,110,0,Math.PI*2); x.stroke();
+ x.fillStyle="#041e4a"; x.fillRect(0,0,900,86); x.fillStyle="#ffd928"; x.font="800 40px sans-serif"; x.textAlign="center"; x.fillText("MY KERALA BLASTERS XI · "+curForm.replace("433","4-3-3").replace("442","4-4-2").replace("352","3-5-2"),450,56);
+ var defs=FORMS[curForm];
+ defs.forEach(function(d,idx){ var p=slotPlayers[idx]; if(!p)return; var px=d[2]/100*900, py=86+(d[3]/100*1028);
+  x.beginPath(); x.arc(px,py,34,0,Math.PI*2); x.fillStyle="#041e4a"; x.fill(); x.lineWidth=5; x.strokeStyle="#ffd928"; x.stroke();
+  x.fillStyle="#fff"; x.font="800 26px sans-serif"; x.fillText(p.shirt||"•",px,py+9);
+  x.font="700 22px sans-serif"; var nm=shortName(p).toUpperCase(); var w=x.measureText(nm).width+16; x.fillStyle="rgba(1,24,58,.92)"; x.fillRect(px-w/2,py+40,w,30); x.fillStyle="#fff"; x.fillText(nm,px,py+62); });
+ var a=document.createElement("a"); a.download="my-blasters-xi.png"; a.href=c.toDataURL("image/png"); a.click(); });
+renderPitch();
+/* countdown */
+var target=new Date("2026-10-18T19:30:00+05:30").getTime();
+function tick(){ var diff=Math.max(0,target-Date.now()); var d=Math.floor(diff/864e5),h=Math.floor(diff/36e5)%24,m=Math.floor(diff/6e4)%60,s=Math.floor(diff/1e3)%60;
+ document.getElementById("cdD").textContent=d; document.getElementById("cdH").textContent=h; document.getElementById("cdM").textContent=m; document.getElementById("cdS").textContent=s; }
+tick(); setInterval(tick,1000);
+/* fixtures */
+var fg=document.getElementById("fixtureGrid");
+KB.fixtures.forEach(function(f){ var b=document.createElement("button"); b.type="button"; b.className="fixture";
+ b.innerHTML='<div class="ftop"><span>'+f.date+(f.time?" · "+f.time:"")+'</span><span class="tag">'+(f.status==="played"?"Full time":(/home/i.test(f.venue)?"Home":"Away"))+'</span></div><div class="teams">'+f.home+'<span class="vs">'+(f.status==="played"?f.score:"vs")+'</span>'+f.away+'</div><div class="fdetail"><strong>Venue:</strong> '+f.venue+'<br><strong>Kickoff:</strong> '+(f.time||"—")+'<br><strong>Type:</strong> '+( /home/i.test(f.venue)?"Home fixture":"Away fixture")+(f.detail?'<br>'+f.detail:"")+'</div>';
+ b.addEventListener("click",function(){b.classList.toggle("open");}); fg.appendChild(b); });
+/* compare */
+var selA=document.getElementById("cmpA"), selB=document.getElementById("cmpB");
+squad.forEach(function(p,i){ selA.add(new Option(p.name,i)); selB.add(new Option(p.name,i)); });
+selA.value=squad.indexOf(byKey("bolton")); selB.value=squad.indexOf(byKey("luna"));
+function cmpRow(label,fn){ var a=fn(squad[selA.value]),bb=fn(squad[selB.value]); return "<tr><th>"+label+"</th><td>"+a+"</td><td>"+bb+"</td></tr>"; }
+function renderCmp(){ document.getElementById("cmpBody").innerHTML=
+ cmpRow("Position",function(p){return p.position;})+cmpRow("Shirt",function(p){return p.shirt||"—";})+cmpRow("Nationality",function(p){return p.nationality||"—";})+cmpRow("Type",function(p){return p.foreign?"Foreign slot":"Domestic";})+cmpRow("Status",function(p){return p.status==="starter"?"Starter":p.status==="bench"?"Bench (opener)":"First-team squad";})+cmpRow("Notes",function(p){return (p.captain?"Club captain. ":"")+(p.injured?"Injured — calf, ~1 month out. ":"")+((p.note||p.bg||"—"));}); }
+selA.addEventListener("change",renderCmp); selB.addEventListener("change",renderCmp); renderCmp();
+/* poll */
+var POLL_KEY="kbfc_poll_v1"; var pollOpts=["Sreekuttan MS","Momo Yansané","Andre Green","Mohammed Sanan K"]; var pollSeed=[86,64,41,19];
+function pollState(){ try{return JSON.parse(localStorage.getItem(POLL_KEY)||"null");}catch(e){return null;} }
+function renderPoll(){ var area=document.getElementById("pollArea"); var st=pollState();
+ if(!st){ area.innerHTML=""; pollOpts.forEach(function(o,i){ var b=document.createElement("button"); b.className="poll-opt"; b.type="button"; b.textContent=o; b.addEventListener("click",function(){ var counts=pollSeed.slice(); counts[i]++; try{localStorage.setItem(POLL_KEY,JSON.stringify({choice:i,counts:counts}));}catch(e){} renderPoll(); }); area.appendChild(b); }); }
+ else { var total=st.counts.reduce(function(a,b){return a+b;},0); area.innerHTML='<p style="color:var(--ok);font-weight:800">Vote counted — here is how fans are leaning:</p>'+st.counts.map(function(c,i){ var pc=Math.round(c/total*100); return '<div class="bar-row"><div class="bl"><span>'+pollOpts[i]+(i===st.choice?" ✓ your pick":"")+'</span><span>'+pc+'%</span></div><div class="bar"><i style="width:'+pc+'%"></i></div></div>'; }).join("")+'<button class="btn" type="button" id="pollReset">Change vote</button>';
+  document.getElementById("pollReset").addEventListener("click",function(){ try{localStorage.removeItem(POLL_KEY);}catch(e){} renderPoll(); }); } }
+renderPoll();
+/* quiz */
+var QUIZ=[{q:"Who scored the Blasters' two goals in the 2–0 opener vs Inter Kashi?",o:["Vibin Mohanan & Andre Green","Korou Singh & Sreekuttan MS","Kosović & Yansané"],a:0},
+{q:"What is the Blasters' home stadium?",o:["Jawaharlal Nehru Stadium, Kochi","Sree Kanteerava Stadium","Salt Lake Stadium"],a:0},
+{q:"Who is the head coach for 2026–27?",o:["Ivan Vukomanović","Ashley Westwood","Stephen Constantine"],a:1},
+{q:"How many ISL finals have the Blasters reached?",o:["Two","Four","Three"],a:2},
+{q:"Who is the club captain this season?",o:["Adrián Luna","James Bolton","Andre Green"],a:0}];
+var qi=0,score=0,qArea=document.getElementById("quizArea");
+function renderQuiz(){ if(qi>=QUIZ.length){ qArea.innerHTML='<div class="quiz-score">You scored '+score+' / '+QUIZ.length+'</div><p>'+(score===5?"Perfect — true Manjappada material!":score>=3?"Strong knowledge.":"Good try — check the squad sections above and go again.")+'</p><button class="btn primary" type="button" id="qAgain">Play again</button>'; document.getElementById("qAgain").addEventListener("click",function(){qi=0;score=0;renderQuiz();}); return; }
+ var item=QUIZ[qi]; qArea.innerHTML='<div style="color:var(--muted);font-weight:700">Question '+(qi+1)+' of '+QUIZ.length+' · Score: '+score+'</div><div class="quiz-q">'+item.q+'</div>';
+ item.o.forEach(function(o,i){ var b=document.createElement("button"); b.type="button"; b.className="quiz-opt"; b.textContent=o; b.addEventListener("click",function(){ var btns=qArea.querySelectorAll(".quiz-opt"); btns.forEach(function(x){x.disabled=true;}); if(i===item.a){b.classList.add("right");score++;}else{b.classList.add("wrong");btns[item.a].classList.add("right");} setTimeout(function(){qi++;renderQuiz();},1100); }); qArea.appendChild(b); }); }
+renderQuiz();
+/* meter + reveal + assistant nav */
+setTimeout(function(){document.getElementById("meterFill").style.width="83.33%";},350);
+var io=("IntersectionObserver" in window)?new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}});},{threshold:.08}):null;
+document.querySelectorAll(".reveal").forEach(function(el){ if(io)io.observe(el); else el.classList.add("in"); });
+document.getElementById("navAssistant").addEventListener("click",function(e){e.preventDefault(); document.getElementById("chatToggle").click();});
+})();
+</script>
+
+<script>
 (function () {
   var feedEl = document.getElementById("newsFeed");
   var stampEl = document.getElementById("newsStamp");
@@ -1280,21 +902,23 @@ var KBFC_KB = {
         }
         setStamp("Feed updated: " + (data && data.updated ? fmtTime(data.updated) : "—"));
       })
-      .catch(function () { if (lastPayload === null) { lastPayload = "unavailable"; showFallback(); } });
+      .catch(function () { if (lastPayload === null) { var kb=window.KBFC_KB; if (kb && kb.latestUpdates && kb.latestUpdates.length) { lastPayload="kb"; render(kb.latestUpdates.map(function(u){ return { title: u.text, source: "Club update · "+u.category, url: "", published: "", summary: u.dateLabel }; })); setStamp("Club updates · verified "+kb.meta.updated); } else { lastPayload = "unavailable"; showFallback(); } } });
   }
 
-  function load() {
-    fetchLive()
+  function loadLive() {
+    return fetchLive()
       .then(function (items) {
         var payload = "live:" + JSON.stringify(items);
         if (payload !== lastPayload) { lastPayload = payload; render(items); }
         setStamp("Live from Google News · checked " + fmtTime(new Date().toISOString()));
-      })
-      .catch(loadBackup);
+      });
+  }
+  function load() {
+    loadBackup();
+    loadLive().catch(function () { /* backup already shown instantly */ });
   }
   load();
-  window.setInterval(load, 5 * 60 * 1000);
+  window.setInterval(function(){ loadLive().catch(loadBackup); }, 5 * 60 * 1000);
 })();
 </script>
-</body>
-</html>
+</body></html>
