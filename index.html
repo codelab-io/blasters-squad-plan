@@ -321,6 +321,91 @@
     .player-role p { margin: 0; font-size: 18px; }
     body.modal-open { overflow: hidden; }
 
+    .chat-toggle {
+      position: fixed;
+      right: 20px;
+      bottom: calc(20px + env(safe-area-inset-bottom));
+      z-index: 40;
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 13px 19px;
+      border: 2px solid var(--blue-deep);
+      border-radius: 999px;
+      color: var(--yellow-ink);
+      background: var(--yellow);
+      font-weight: 800;
+      box-shadow: 0 10px 26px rgba(0, 26, 66, .32);
+      cursor: pointer;
+    }
+    .chat-toggle:hover { transform: translateY(-2px); }
+    .chat-toggle svg { width: 20px; height: 20px; flex: none; }
+    .chat-toggle .chat-close-icon { display: none; }
+    body.chat-open .chat-toggle .chat-open-icon { display: none; }
+    body.chat-open .chat-toggle .chat-close-icon { display: block; }
+    body.chat-open .chat-toggle .chat-toggle-label { display: none; }
+
+    .chat-panel {
+      position: fixed;
+      right: 20px;
+      bottom: calc(82px + env(safe-area-inset-bottom));
+      z-index: 40;
+      display: none;
+      flex-direction: column;
+      width: min(390px, calc(100vw - 32px));
+      height: min(560px, calc(100dvh - 120px));
+      overflow: hidden;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+    .chat-panel.open { display: flex; }
+    .chat-head { flex: none; padding: 15px 18px 13px; color: white; background: var(--blue-deep); border-bottom: 5px solid var(--yellow); }
+    .chat-head h3 { margin: 0; font: 800 23px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; }
+    .chat-head p { margin: 2px 0 0; color: #cad8ed; font-size: 13.5px; }
+    .chat-messages { flex: 1; overflow-y: auto; padding: 16px 14px 8px; display: flex; flex-direction: column; gap: 10px; }
+    .msg { max-width: 88%; padding: 10px 13px; font-size: 15px; line-height: 1.45; overflow-wrap: break-word; }
+    .msg.bot { align-self: flex-start; background: var(--surface-2); border: 1px solid var(--line); border-radius: 4px 14px 14px 14px; }
+    .msg.user { align-self: flex-end; color: white; background: var(--blue); border-radius: 14px 4px 14px 14px; }
+    .msg.bot strong { color: var(--blue); }
+    .msg ul { margin: 6px 0 2px; padding-left: 18px; }
+    .msg li { margin: 2px 0; }
+    .chat-chips { flex: none; display: flex; gap: 7px; flex-wrap: wrap; padding: 8px 14px 4px; }
+    .chat-chip {
+      padding: 6px 11px;
+      border: 1px solid var(--blue);
+      border-radius: 999px;
+      color: var(--blue);
+      background: transparent;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .chat-chip:hover { background: var(--blue-soft); }
+    .chat-form { flex: none; display: flex; gap: 8px; padding: 12px 14px calc(12px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); }
+    .chat-form input {
+      flex: 1; min-width: 0;
+      padding: 11px 13px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--ink);
+      background: var(--paper);
+      font: inherit;
+      font-size: 15px;
+    }
+    .chat-form input:focus-visible { outline: 3px solid var(--yellow); outline-offset: 1px; }
+    .chat-send {
+      flex: none;
+      width: 44px; height: 44px;
+      display: grid; place-items: center;
+      border: 0; border-radius: 50%;
+      color: var(--yellow-ink);
+      background: var(--yellow);
+      cursor: pointer;
+    }
+    .chat-send svg { width: 19px; height: 19px; }
+    .chat-send:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+
     @media (max-width: 860px) {
       .hero-inner { grid-template-columns: 1fr; }
       .coach-card { justify-self: start; }
@@ -354,6 +439,11 @@
       .player-data div { display: grid; grid-template-columns: 104px 1fr; gap: 8px; padding: 11px 20px; border-right: 0; border-bottom: 1px solid var(--line); }
       .player-data div:last-child { border-bottom: 0; }
       .footer { width: calc(100% - 28px); align-items: flex-start; flex-direction: column; }
+      .chat-toggle { right: 14px; bottom: calc(14px + env(safe-area-inset-bottom)); width: 52px; height: 52px; padding: 0; justify-content: center; border-radius: 50%; }
+      .chat-toggle .chat-toggle-label { display: none; }
+      .chat-toggle svg { width: 24px; height: 24px; }
+      .chat-panel { right: 0; left: 0; bottom: 0; width: 100%; height: min(78dvh, 620px); border-left: 0; border-right: 0; border-bottom: 0; }
+      body.chat-open .chat-toggle { bottom: auto; top: calc(10px + env(safe-area-inset-top)); right: 10px; z-index: 41; padding: 10px 13px; }
     }
     @media (max-width: 390px) {
       .pitch { min-height: 535px; }
@@ -514,6 +604,36 @@
   </article>
 </div>
 
+<button class="chat-toggle" id="chatToggle" type="button" aria-expanded="false" aria-controls="chatPanel" aria-label="Open squad assistant chat">
+  <svg class="chat-open-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+  <svg class="chat-close-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+  <span class="chat-toggle-label">Ask about the squad</span>
+</button>
+
+<section class="chat-panel" id="chatPanel" aria-label="Squad assistant chat" aria-hidden="true">
+  <div class="chat-head">
+    <h3>Blasters Assistant</h3>
+    <p>Ask about the squad, club history, the stadium, coach, fixtures and more.</p>
+  </div>
+  <div class="chat-messages" id="chatMessages" role="log" aria-live="polite" aria-label="Chat messages"></div>
+  <div class="chat-chips" id="chatChips">
+    <button class="chat-chip" type="button" data-q="What is the starting XI?">Starting XI</button>
+    <button class="chat-chip" type="button" data-q="Tell me about the club's history">Club history</button>
+    <button class="chat-chip" type="button" data-q="How many ISL finals have the Blasters played?">ISL finals</button>
+    <button class="chat-chip" type="button" data-q="Where do the Blasters play and who are Manjappada?">Stadium &amp; fans</button>
+    <button class="chat-chip" type="button" data-q="Who is Ashley Westwood?">Coach Westwood</button>
+    <button class="chat-chip" type="button" data-q="Which foreign players are in the squad?">Foreign slots</button>
+    <button class="chat-chip" type="button" data-q="Who are the new signings this season?">New signings</button>
+    <button class="chat-chip" type="button" data-q="What is the next match?">Next match</button>
+  </div>
+  <form class="chat-form" id="chatForm">
+    <input id="chatInput" type="text" autocomplete="off" placeholder="Ask about players, history, stadium, fixtures…" aria-label="Type your question" />
+    <button class="chat-send" type="submit" aria-label="Send message">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/></svg>
+    </button>
+  </form>
+</section>
+
 <script>
 (function () {
   var players = {
@@ -585,6 +705,309 @@
   modal.addEventListener("click", function (event) { if (event.target === modal) closePlayer(); });
   document.addEventListener("keydown", function (event) { if (event.key === "Escape" && modal.classList.contains("open")) closePlayer(); });
 
+})();
+</script>
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     KBFC KNOWLEDGE BASE · AUTO-UPDATED DATA BLOCK
+     The sync pipeline (daily checks + after every Blasters match) replaces
+     EVERYTHING between KB-DATA-START and KB-DATA-END with the latest
+     verified data: squad, coach, fixtures, results, club facts and the
+     latest club updates feed. The chatbot reads ALL of its answers from
+     this block, so data can be swapped without touching the chatbot code.
+     Keep chatbot logic OUTSIDE these markers.
+     ════════════════════════════════════════════════════════════════════════ -->
+<script>
+/* KB-DATA-START */
+var KBFC_KB = {
+  meta: {
+    club: "Kerala Blasters FC",
+    season: "2026–27 Indian Super League",
+    updated: "11 Oct 2026"
+  },
+  club: {
+    name: "Kerala Blasters FC",
+    founded: 2014,
+    home: "Kochi, Kerala",
+    colours: "Yellow and blue",
+    history: "Kerala Blasters FC were founded in 2014 as one of the founding clubs of the Indian Super League, representing Kerala — a state with a deep football culture. Playing in yellow and blue, the Blasters quickly built one of the largest followings in Indian football and reached the ISL final in their very first season.",
+    finals: [
+      { season: "2014", detail: "Lost 0–1 to ATK in the inaugural ISL final." },
+      { season: "2016", detail: "Lost to ATK on penalties after a 1–1 draw, in the final played in Kochi." },
+      { season: "2021–22", detail: "Lost to Hyderabad FC on penalties after a 1–1 draw." }
+    ],
+    honoursNote: "Three ISL finals, three runners-up finishes — the Blasters are still chasing their first ISL trophy, which is a big part of the club's story and the fans' hunger every season.",
+    stadium: {
+      name: "Jawaharlal Nehru Stadium",
+      area: "Kaloor, Kochi",
+      note: "The Blasters' home since 2014 and one of the most atmospheric football stadiums in India, famous for the wall of yellow on matchdays."
+    },
+    fans: {
+      group: "Manjappada",
+      meaning: "Manjappada means the 'Yellow Army' (manja = yellow, pada = army).",
+      note: "Manjappada are the Blasters' official supporters' group and one of the biggest fan movements in Asian football, known for giant tifos, drums and full-house atmospheres at Kochi home games."
+    },
+    rivalries: [
+      { club: "Bengaluru FC", note: "The fiercest rivalry — two huge, passionate fanbases and several heated meetings since Bengaluru joined the ISL in 2017." },
+      { club: "Chennaiyin FC", note: "The southern derby — Kerala vs Tamil Nadu bragging rights between two of the ISL's founding clubs." }
+    ]
+  },
+  coach: {
+    name: "Ashley Westwood",
+    nationality: "English",
+    role: "Head coach",
+    background: "English coach and former defender. Westwood is best known in India for building Bengaluru FC's early dynasty — two I-League titles (2013–14 and 2015–16) and the Federation Cup (2015). He has also coached ATK and RoundGlass Punjab FC in India, and managed the Afghanistan national team, before taking charge of the Blasters for the 2026–27 rebuild.",
+    style: "At the Blasters he has set the side up in a 4–3–3."
+  },
+  foreignRules: {
+    maxSlots: 6,
+    filledSlots: 5,
+    note: "ISL clubs can register up to six foreign players. The Blasters have filled five of their six slots for 2026–27, so one foreign slot is still open."
+  },
+  season: {
+    summary: "The 2026–27 season is a rebuild under new head coach Ashley Westwood, with a refreshed foreign core. The Blasters opened the campaign with a 2–0 away win over Inter Kashi on 11 Oct 2026, and one foreign slot remains open for a further signing."
+  },
+  squad: [
+    { name: "Arsh Anwer Shaikh", keys: ["arsh", "shaikh"], shirt: "31", position: "Goalkeeper", nationality: "India", foreign: false, status: "starter", bg: "Indian goalkeeper.", note: "Started the opener and kept a clean sheet." },
+    { name: "Brahmacharimayum Sumit Sharma", keys: ["sumit"], shirt: "5", position: "Right-back", nationality: "India", foreign: false, status: "starter", bg: "Indian defender from Manipur.", note: "Started at right-back in the opener; replaced by Sandeep Singh on 87′." },
+    { name: "James Bolton", keys: ["bolton"], shirt: "13", position: "Centre-back", nationality: "England", foreign: true, status: "starter", bg: "English defender; previously played for Portsmouth and Plymouth Argyle in England and St Mirren in Scotland.", note: "Started the opener at centre-back in the clean-sheet win." },
+    { name: "Aibanbha Kupar Dohling", keys: ["aiban", "dohling"], shirt: "27", position: "Centre-back", nationality: "India", foreign: false, status: "starter", bg: "Indian centre-back from Meghalaya; previously played for FC Goa.", note: "Started the opener at centre-back in the clean-sheet win." },
+    { name: "Ruivah Hormipam", keys: ["hormipam", "ruivah"], shirt: "4", position: "Left-back", nationality: "India", foreign: false, status: "starter", bg: "Indian defender from Manipur and an India international; with the Blasters since 2021.", note: "Started the opener at left-back." },
+    { name: "Freddy Lallawmawma", keys: ["freddy", "lallawmawma"], shirt: "6", position: "Midfielder", nationality: "India", foreign: false, status: "starter", bg: "Indian midfielder from Mizoram.", note: "Started in the three-man midfield in the opener." },
+    { name: "Nebojsa Kosovic", keys: ["kosovic", "nebojsa"], shirt: "23", position: "Midfielder", nationality: "Montenegro", foreign: true, status: "starter", bg: "Montenegro international midfielder; previously with Partizan Belgrade and Kairat Almaty.", note: "Started the opener in midfield; replaced by Momo Yansane at half-time." },
+    { name: "Vibin Mohanan", keys: ["vibin", "mohanan"], shirt: "8", position: "Midfielder", nationality: "India", foreign: false, status: "starter", captain: true, bg: "Kerala-born midfielder who came through the Blasters' own youth setup.", note: "Captained the side in the opener and scored the first goal, on 18′ from Korou Singh's assist; replaced by Sanan on 66′." },
+    { name: "Korou Singh Thingujam", keys: ["korou"], shirt: "7", position: "Right wing", nationality: "India", foreign: false, status: "starter", bg: "Indian winger from Manipur.", note: "Assisted the opening goal in the opener; replaced by Paul Ramfangzauva at half-time." },
+    { name: "Andre Green", keys: ["green", "andre"], shirt: "9", position: "Left wing", nationality: "England", foreign: true, status: "starter", bg: "English winger who came through Aston Villa's academy and has played for Sheffield Wednesday.", note: "Started the opener on the left and sealed the 2–0 win with the 90+4′ goal." },
+    { name: "Sreekuttan MS", keys: ["sreekuttan"], shirt: "45", position: "Striker", nationality: "India", foreign: false, status: "starter", bg: "Indian forward.", note: "Led the line in the opener; replaced by Ebindas Yesudasan on 67′." },
+    { name: "Amrinder Singh", keys: ["amrinder"], shirt: "", position: "Goalkeeper", nationality: "India", foreign: false, status: "bench", bg: "Experienced India international goalkeeper — long-time Mumbai City FC captain and ISL winner there, and later with ATK Mohun Bagan and Odisha FC.", note: "Named on the bench for the opener." },
+    { name: "Sandeep Singh", keys: ["sandeep"], shirt: "", position: "Defender", nationality: "India", foreign: false, status: "bench", bg: "Indian defender with the Blasters since 2020, previously with TRAU FC.", note: "Came on in the opener on 87′ for Sumit Sharma." },
+    { name: "Mohammed Sanan K", keys: ["sanan"], shirt: "", position: "Midfielder", nationality: "India", foreign: false, status: "bench", bg: "Indian midfielder from Kerala.", note: "Came on in the opener on 66′ for Vibin Mohanan." },
+    { name: "Sahil Tavora", keys: ["tavora", "sahil"], shirt: "", position: "Midfielder", nationality: "India", foreign: false, status: "bench", bg: "Indian midfielder who won the ISL Cup with Hyderabad FC in 2022; he began his ISL career with FC Goa.", note: "Named on the bench for the opener." },
+    { name: "Paul Ramfangzauva", keys: ["paul", "ramfangzauva"], shirt: "", position: "Midfielder", nationality: "India", foreign: false, status: "bench", bg: "Indian midfielder from Mizoram.", note: "Came on in the opener at half-time for Korou Singh." },
+    { name: "Jaganath Jayan", keys: ["jaganath", "jayan"], shirt: "", position: "", nationality: "India", foreign: false, status: "bench", bg: "Indian squad player.", note: "Named on the bench for the opener." },
+    { name: "Ramhlunchhunga", keys: ["ramhlunchhunga"], shirt: "", position: "", nationality: "India", foreign: false, status: "bench", bg: "Indian squad player from Mizoram.", note: "Named on the bench for the opener." },
+    { name: "Ebindas Yesudasan", keys: ["ebindas", "yesudasan"], shirt: "", position: "", nationality: "India", foreign: false, status: "bench", bg: "Indian squad player.", note: "Came on in the opener on 67′ for Sreekuttan MS." },
+    { name: "Momo Yansane", keys: ["yansane", "momo"], shirt: "", position: "Striker", nationality: "Guinea", foreign: true, status: "bench", bg: "Guinea international striker; previously played for Sheriff Tiraspol in Moldova and in Russia's top flight.", note: "Came on in the opener at half-time for Nebojsa Kosovic." },
+    { name: "Fallou Ndiaye", keys: ["ndiaye", "fallou"], shirt: "", position: "", nationality: "Senegal", foreign: true, status: "squad", bg: "Senegalese foreign signing for the 2026–27 season.", note: "Holds one of the five filled foreign slots; was not part of the opener matchday squad." }
+  ],
+  signings: [
+    { name: "Andre Green", text: "English winger, foreign signing for 2026–27; scored the second goal in the season opener." },
+    { name: "James Bolton", text: "English centre-back, confirmed as a foreign signing on 7 Oct 2026; started the opener." },
+    { name: "Nebojsa Kosovic", text: "Montenegro international midfielder, confirmed as a foreign signing on 7 Oct 2026; started the opener." },
+    { name: "Momo Yansane", text: "Guinean centre-forward, announced on 8 Oct 2026; debuted off the bench in the opener." },
+    { name: "Fallou Ndiaye", text: "Senegalese foreign signing, filling the fifth foreign slot." }
+  ],
+  fixtures: [
+    { date: "Sun 11 Oct 2026", home: "Inter Kashi", away: "Kerala Blasters", venue: "Away", status: "played", score: "0–2", detail: "Vibin Mohanan 18′ · Andre Green 90+4′" },
+    { date: "Sun 18 Oct 2026", time: "19:30 IST", home: "NorthEast United", away: "Kerala Blasters", venue: "Guwahati (away)", status: "upcoming", detail: "" },
+    { date: "Sun 25 Oct 2026", time: "19:30 IST", home: "Kerala Blasters", away: "Mumbai City", venue: "Kochi (home)", status: "upcoming", detail: "First home game of the season." }
+  ],
+  opener: {
+    title: "Inter Kashi 0–2 Kerala Blasters — season opener, 11 Oct 2026",
+    events: [
+      { time: "18′", text: "Goal — Vibin Mohanan, assisted by Korou Singh." },
+      { time: "46′", text: "Substitutions — Momo Yansane on for Kosovic; Paul Ramfangzauva on for Korou Singh." },
+      { time: "66′", text: "Substitution — Mohammed Sanan on for Vibin Mohanan." },
+      { time: "67′", text: "Substitution — Ebindas Yesudasan on for Sreekuttan MS." },
+      { time: "87′", text: "Substitution — Sandeep Singh on for Sumit Sharma." },
+      { time: "90+4′", text: "Goal — Andre Green seals the 2–0 win." }
+    ]
+  },
+  latestUpdates: [
+    { dateLabel: "11 Oct 2026", category: "Result", text: "Season opener: Kerala Blasters beat Inter Kashi 2–0 away — Vibin Mohanan (18′) and Andre Green (90+4′) scored, and the defence kept a clean sheet." },
+    { dateLabel: "8 Oct 2026", category: "Signing", text: "Momo Yansane announced as the Blasters' new Guinean centre-forward for the 2026–27 season." },
+    { dateLabel: "7 Oct 2026", category: "Signing", text: "James Bolton (England, centre-back) and Nebojsa Kosovic (Montenegro, midfield) confirmed as foreign signings." },
+    { dateLabel: "Pre-season 2026", category: "Announcement", text: "Ashley Westwood takes charge as head coach for the 2026–27 rebuild, setting the team up in a 4–3–3." },
+    { dateLabel: "Pre-season 2026", category: "Signing", text: "Andre Green and Fallou Ndiaye complete the five foreign signings so far — one of the six foreign slots is still open." }
+  ]
+};
+/* KB-DATA-END */
+</script>
+
+<script>
+(function () {
+  var KB = window.KBFC_KB;
+  var toggle = document.getElementById("chatToggle");
+  var panel = document.getElementById("chatPanel");
+  var messagesEl = document.getElementById("chatMessages");
+  var form = document.getElementById("chatForm");
+  var input = document.getElementById("chatInput");
+  var greeted = false;
+
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+  function list(items) { return "<ul>" + items.map(function (i) { return "<li>" + i + "</li>"; }).join("") + "</ul>"; }
+  function starters() { return KB.squad.filter(function (p) { return p.status === "starter"; }); }
+  function bench() { return KB.squad.filter(function (p) { return p.status === "bench"; }); }
+  function foreigners() { return KB.squad.filter(function (p) { return p.foreign; }); }
+  function captain() { return KB.squad.filter(function (p) { return p.captain; })[0]; }
+  function nextFixture() { return KB.fixtures.filter(function (f) { return f.status === "upcoming"; })[0]; }
+
+  function playerAnswer(p) {
+    var lines = ["<strong>" + esc(p.name) + "</strong>"];
+    var facts = [];
+    if (p.position) facts.push(esc(p.position));
+    if (p.shirt) facts.push("shirt " + esc(p.shirt));
+    facts.push(esc(p.nationality) + (p.foreign ? " · counts as a foreign slot" : ""));
+    facts.push(p.status === "starter" ? "in the starting XI" : p.status === "bench" ? "named on the bench for the opener" : "in the first-team squad");
+    lines.push(facts.join(" · "));
+    if (p.bg) lines.push(esc(p.bg));
+    if (p.note) lines.push("<em>Opener:</em> " + esc(p.note));
+    return lines.join("<br>");
+  }
+
+  function updatesAnswer(filter) {
+    var items = KB.latestUpdates.filter(function (u) { return !filter || u.category === filter; });
+    if (!items.length) return null;
+    return "<strong>Latest club updates</strong> (verified, as of " + esc(KB.meta.updated) + "):" +
+      list(items.map(function (u) { return "<strong>" + esc(u.dateLabel) + " · " + esc(u.category) + ":</strong> " + esc(u.text); }));
+  }
+
+  function answer(raw) {
+    var q = " " + raw.toLowerCase().replace(/[?.,!]/g, " ").replace(/\s+/g, " ") + " ";
+
+    if (/\b(hi|hello|hey|namaste)\b/.test(q) && q.length < 24) {
+      return "Hi! Ask me about the <strong>squad and players</strong>, coach <strong>Ashley Westwood</strong>, the club's <strong>history and ISL finals</strong>, the <strong>stadium and Manjappada</strong>, <strong>foreign slots</strong>, <strong>fixtures and results</strong>, or the <strong>latest club updates</strong>.";
+    }
+    if (q.indexOf("injur") !== -1 || q.indexOf("return") !== -1 && q.indexOf("player") !== -1) {
+      var inj = KB.latestUpdates.filter(function (u) { return u.category === "Injury" || u.category === "Return"; });
+      if (inj.length) return "<strong>Injury / return news:</strong>" + list(inj.map(function (u) { return "<strong>" + esc(u.dateLabel) + ":</strong> " + esc(u.text); }));
+      return "There are <strong>no injury or return updates</strong> in the latest verified club updates (as of " + esc(KB.meta.updated) + "). As soon as an official update lands, it will appear in the updates feed here.";
+    }
+    if (q.indexOf("latest") !== -1 || q.indexOf("news") !== -1 || q.indexOf("update") !== -1 || q.indexOf("announcement") !== -1 || q.indexOf("whats new") !== -1 || q.indexOf("what's new") !== -1) {
+      return updatesAnswer(null);
+    }
+    if (q.indexOf("starting xi") !== -1 || q.indexOf("starting 11") !== -1 || q.indexOf("lineup") !== -1 || q.indexOf("line up") !== -1 || q.indexOf("who starts") !== -1 || q.indexOf("who played") !== -1) {
+      return "<strong>Starting XI</strong> for the opener (4–3–3):" + list(starters().map(function (p) { return esc(p.name) + (p.position ? " — " + esc(p.position) : ""); })) + "Tap any player on the pitch above for their player card.";
+    }
+    if (q.indexOf("formation") !== -1 || q.indexOf("4-3-3") !== -1 || q.indexOf("4–3–3") !== -1 || q.indexOf("tactic") !== -1 || q.indexOf("system") !== -1) {
+      return "The Blasters are set up in a <strong>4–3–3</strong> under " + esc(KB.coach.name) + " — a back four, a three-man midfield with captain " + esc(captain().name) + " in it, and a front three. You can see the shape on the pitch at the top of this page.";
+    }
+    if (q.indexOf("coach") !== -1 || q.indexOf("westwood") !== -1 || q.indexOf("manager") !== -1) {
+      return "<strong>" + esc(KB.coach.name) + "</strong> (" + esc(KB.coach.nationality) + ") is the Blasters' head coach. " + esc(KB.coach.background);
+    }
+    if (q.indexOf("stadium") !== -1 || q.indexOf("home ground") !== -1 || q.indexOf("where do") !== -1 || q.indexOf("play their home") !== -1 || q.indexOf("kochi") !== -1 && q.indexOf("match") === -1) {
+      return "The Blasters play at the <strong>" + esc(KB.club.stadium.name) + "</strong>, " + esc(KB.club.stadium.area) + ". " + esc(KB.club.stadium.note);
+    }
+    if (q.indexOf("manjappada") !== -1 || q.indexOf("fan") !== -1 || q.indexOf("supporter") !== -1 || q.indexOf("yellow army") !== -1) {
+      return "<strong>" + esc(KB.club.fans.group) + "</strong> — " + esc(KB.club.fans.meaning) + " " + esc(KB.club.fans.note);
+    }
+    if (q.indexOf("final") !== -1) {
+      return "The Blasters have played <strong>three ISL finals</strong> and lost all three:" + list(KB.club.finals.map(function (f) { return "<strong>" + esc(f.season) + ":</strong> " + esc(f.detail); })) + esc(KB.club.honoursNote);
+    }
+    if (q.indexOf("troph") !== -1 || q.indexOf("title") !== -1 || q.indexOf("won the") !== -1 || q.indexOf("champion") !== -1) {
+      return esc(KB.club.honoursNote) + " The finals were in " + KB.club.finals.map(function (f) { return f.season; }).join(", ") + ".";
+    }
+    if (q.indexOf("histor") !== -1 || q.indexOf("founded") !== -1 || q.indexOf("about the club") !== -1 || q.indexOf("the club") !== -1) {
+      return esc(KB.club.history) + " The club plays in " + esc(KB.club.colours.toLowerCase()) + " and is based in " + esc(KB.club.home) + ".";
+    }
+    if (q.indexOf("rival") !== -1 || q.indexOf("derby") !== -1) {
+      return "<strong>Main rivalries:</strong>" + list(KB.club.rivalries.map(function (r) { return "<strong>" + esc(r.club) + "</strong> — " + esc(r.note); }));
+    }
+    if (q.indexOf("next match") !== -1 || q.indexOf("next game") !== -1 || q.indexOf("next fixture") !== -1) {
+      var nf = nextFixture();
+      if (nf) return "Next up: <strong>" + esc(nf.home) + " vs " + esc(nf.away) + "</strong> on " + esc(nf.date) + (nf.time ? " at " + esc(nf.time) : "") + ", " + esc(nf.venue) + "." + (nf.detail ? " " + esc(nf.detail) : "");
+      return "No upcoming fixture is listed in the current data.";
+    }
+    if (q.indexOf("first home") !== -1 || q.indexOf("home game") !== -1 || q.indexOf("home match") !== -1) {
+      var hf = KB.fixtures.filter(function (f) { return f.status === "upcoming" && /home/i.test(f.venue); })[0];
+      if (hf) return "The first home game is <strong>" + esc(hf.home) + " vs " + esc(hf.away) + "</strong> on " + esc(hf.date) + (hf.time ? " at " + esc(hf.time) : "") + " at the " + esc(KB.club.stadium.name) + ", Kochi. " + esc(hf.detail || "");
+      return "No home fixture is listed in the current data yet.";
+    }
+    if (q.indexOf("fixture") !== -1 || q.indexOf("schedule") !== -1 || q.indexOf("matches") !== -1 || q.indexOf("games") !== -1) {
+      return "<strong>Fixtures on the current schedule:</strong>" + list(KB.fixtures.map(function (f) {
+        return "<strong>" + esc(f.date) + ":</strong> " + esc(f.home) + " " + (f.status === "played" ? "<strong>" + esc(f.score) + "</strong>" : "vs") + " " + esc(f.away) + " — " + esc(f.venue) + (f.status === "played" ? " (full time)" : (f.time ? ", " + esc(f.time) : ""));
+      }));
+    }
+    if (q.indexOf("substitution") !== -1 || q.indexOf("came on") !== -1 || q.indexOf("subbed") !== -1 || q.indexOf("replaced") !== -1) {
+      return "<strong>" + esc(KB.opener.title) + "</strong> — changes:" + list(KB.opener.events.filter(function (e) { return /ubstitution/.test(e.text); }).map(function (e) { return "<strong>" + esc(e.time) + "</strong> " + esc(e.text); }));
+    }
+    if (q.indexOf("bench") !== -1 || q.indexOf("substitute") !== -1) {
+      return "<strong>Bench for the opener</strong> (nine substitutes):" + list(bench().map(function (p) { return esc(p.name) + (p.position ? " — " + esc(p.position) : ""); }));
+    }
+    if (q.indexOf("scored") !== -1 || q.indexOf("scorer") !== -1 || q.indexOf("goal") !== -1 || q.indexOf("result") !== -1 || q.indexOf("opener") !== -1 || q.indexOf("last match") !== -1 || q.indexOf("match report") !== -1 || q.indexOf("inter kashi") !== -1 || q.indexOf("who won") !== -1 || q.indexOf("full time") !== -1) {
+      return "<strong>" + esc(KB.opener.title) + "</strong>" + list(KB.opener.events.map(function (e) { return "<strong>" + esc(e.time) + "</strong> " + esc(e.text); }));
+    }
+    if (q.indexOf("signing") !== -1 || q.indexOf("transfer") !== -1 || q.indexOf("signed") !== -1 || q.indexOf("new player") !== -1 || q.indexOf("recruit") !== -1) {
+      return "<strong>Confirmed 2026–27 signings</strong> (the foreign core):" + list(KB.signings.map(function (s) { return "<strong>" + esc(s.name) + "</strong> — " + esc(s.text); })) + "One foreign slot is still open.";
+    }
+    if (q.indexOf("foreign") !== -1 || q.indexOf("slot") !== -1 || q.indexOf("overseas") !== -1) {
+      return esc(KB.foreignRules.note) + list(foreigners().map(function (p) { return "<strong>" + esc(p.name) + "</strong> — " + esc(p.nationality) + (p.position ? ", " + esc(p.position) : ""); })) + "The remaining slot is <strong>open</strong>.";
+    }
+    if (q.indexOf("captain") !== -1) {
+      var c = captain();
+      return "<strong>" + esc(c.name) + "</strong> captains the side — he led the team in the opener and scored the first goal of the season.";
+    }
+    if (q.indexOf("goalkeeper") !== -1 || q.indexOf("keeper") !== -1 || q.indexOf("in goal") !== -1) {
+      var gks = KB.squad.filter(function (p) { return p.position === "Goalkeeper"; });
+      return "Goalkeepers: " + gks.map(function (p) { return "<strong>" + esc(p.name) + "</strong> (" + (p.status === "starter" ? "started the opener, clean sheet" : "on the bench for the opener") + ")"; }).join(" and ") + ".";
+    }
+    if (q.indexOf("clean sheet") !== -1) {
+      return "Yes — the Blasters kept a <strong>clean sheet</strong> in the opener, beating Inter Kashi 2–0 away with " + esc(starters()[0].name) + " in goal and a back four of Sumit Sharma, James Bolton, Aibanbha Dohling and Ruivah Hormipam.";
+    }
+    if (q.indexOf("season") !== -1) {
+      return esc(KB.season.summary);
+    }
+    if (q.indexOf("squad") !== -1 || q.indexOf("players") !== -1 || q.indexOf("team") !== -1) {
+      return "The matchday squad has <strong>" + starters().length + " starters</strong> and <strong>" + bench().length + " substitutes</strong>. Ask me about any player by name — for example 'Who is James Bolton?' — or ask for the starting XI or the bench.";
+    }
+
+    for (var i = 0; i < KB.squad.length; i++) {
+      var p = KB.squad[i];
+      for (var j = 0; j < p.keys.length; j++) {
+        if (q.indexOf(" " + p.keys[j] + " ") !== -1 || q.indexOf(" " + p.keys[j] + "s ") !== -1) return playerAnswer(p);
+      }
+    }
+
+    return "I don't have verified information on that yet. I can answer questions about the <strong>squad and individual players</strong>, <strong>coach Ashley Westwood</strong>, <strong>club history and ISL finals</strong>, the <strong>stadium and Manjappada</strong>, <strong>rivalries</strong>, <strong>foreign-player slots and rules</strong>, <strong>signings</strong>, <strong>fixtures and results</strong>, and the <strong>latest club updates</strong> — try one of those, or tap a topic below.";
+  }
+
+  function addMessage(text, who) {
+    var div = document.createElement("div");
+    div.className = "msg " + who;
+    if (who === "user") div.textContent = text; else div.innerHTML = text;
+    messagesEl.appendChild(div);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
+  function send(text) {
+    var clean = (text || "").trim();
+    if (!clean) return;
+    addMessage(clean, "user");
+    var reply = answer(clean);
+    window.setTimeout(function () { addMessage(reply, "bot"); }, 180);
+  }
+
+  function setOpen(open) {
+    panel.classList.toggle("open", open);
+    panel.setAttribute("aria-hidden", open ? "false" : "true");
+    toggle.setAttribute("aria-expanded", open ? "true" : "false");
+    toggle.setAttribute("aria-label", open ? "Close squad assistant chat" : "Open squad assistant chat");
+    document.body.classList.toggle("chat-open", open);
+    if (open) {
+      if (!greeted) {
+        greeted = true;
+        addMessage("Hi! I'm the <strong>Blasters Assistant</strong>. I can answer questions about the squad and players, coach Ashley Westwood, the club's history and ISL finals, the Jawaharlal Nehru Stadium and Manjappada, rivalries, foreign slots, signings, fixtures, results and the latest club updates (info verified as of " + esc(KB.meta.updated) + "). Ask me anything, or tap a topic below.", "bot");
+      }
+      input.focus();
+    }
+  }
+
+  toggle.addEventListener("click", function () { setOpen(!panel.classList.contains("open")); });
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
+    send(input.value);
+    input.value = "";
+    input.focus();
+  });
+  document.getElementById("chatChips").addEventListener("click", function (event) {
+    var chip = event.target.closest(".chat-chip");
+    if (chip) send(chip.getAttribute("data-q"));
+  });
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape" && panel.classList.contains("open")) setOpen(false);
+  });
 })();
 </script>
 </body>
