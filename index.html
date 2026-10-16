@@ -594,7 +594,7 @@
       <section aria-labelledby="news-title">
         <div class="section-heading">
           <h2 id="news-title">Live News</h2>
-          <p><span class="news-live-tag">Live</span><br>Latest Kerala Blasters headlines, refreshed automatically. Feed updated: <strong id="newsUpdated">—</strong></p>
+          <p><span class="news-live-tag">Live</span><br>Latest Kerala Blasters headlines, refreshed automatically. <span id="newsStamp">Feed updated: —</span></p>
         </div>
         <div id="newsFeed">
           <div class="news-fallback">News feed is being set up — check back shortly</div>
@@ -1093,9 +1093,12 @@ var KBFC_KB = {
 <script>
 (function () {
   var feedEl = document.getElementById("newsFeed");
-  var updatedEl = document.getElementById("newsUpdated");
+  var stampEl = document.getElementById("newsStamp");
   if (!feedEl) return;
   var lastPayload = null;
+
+  var GOOGLE_NEWS_RSS = "https://news.google.com/rss/search?q=%22Kerala+Blasters%22&hl=en-IN&gl=IN&ceid=IN:en";
+  var RELAY_URL = "https://api.allorigins.win/raw?url=" + encodeURIComponent(GOOGLE_NEWS_RSS);
 
   function esc(s) {
     return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -1106,11 +1109,13 @@ var KBFC_KB = {
     if (isNaN(d.getTime())) return String(t);
     return d.toLocaleString("en-IN", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit", hour12: true });
   }
-  function render(data) {
-    var items = (data && data.items) || [];
-    items = items.slice().sort(function (a, b) {
+  function setStamp(text) {
+    if (stampEl) stampEl.textContent = text;
+  }
+  function render(items) {
+    items = (items || []).slice().sort(function (a, b) {
       return (Date.parse(b.published) || 0) - (Date.parse(a.published) || 0);
-    });
+    }).slice(0, 15);
     if (!items.length) {
       feedEl.innerHTML = '<div class="news-fallback">No headlines right now — check back shortly.</div>';
     } else {
@@ -1129,20 +1134,103 @@ var KBFC_KB = {
           "</article>";
       }).join("") + "</div>";
     }
-    if (updatedEl) updatedEl.textContent = data && data.updated ? fmtTime(data.updated) : "—";
   }
   function showFallback() {
     feedEl.innerHTML = '<div class="news-fallback">News feed is being set up — check back shortly</div>';
-    if (updatedEl) updatedEl.textContent = "—";
+    setStamp("Feed updated: —");
   }
-  function load() {
+
+  function stripHtml(html) {
+    var tmp = document.createElement("div");
+    tmp.innerHTML = html || "";
+    return (tmp.textContent || "").replace(/\s+/g, " ").trim();
+  }
+  function cleanSummary(rawDesc, headline) {
+    var text = stripHtml(rawDesc);
+    if (!text) return "";
+    if (headline && text.indexOf(headline) === 0) {
+      text = text.slice(headline.length).replace(/^[\s\-–—:|·]+/, "").trim();
+    }
+    if (!text || text === headline) return "";
+    if (text.length > 140) text = text.slice(0, 140).replace(/\s+\S*$/, "") + "…";
+    return text;
+  }
+  function childText(node, tag) {
+    var el = node.querySelector(tag);
+    return el ? (el.textContent || "").trim() : "";
+  }
+  function parseRss(xmlText) {
+    var doc = new DOMParser().parseFromString(xmlText, "text/xml");
+    if (!doc || doc.querySelector("parsererror")) return [];
+    var nodes = doc.querySelectorAll("item");
+    var items = [];
+    for (var i = 0; i < nodes.length; i++) {
+      var node = nodes[i];
+      var rawTitle = childText(node, "title");
+      if (!rawTitle) continue;
+      var source = childText(node, "source");
+      var headline = rawTitle;
+      var idx = rawTitle.lastIndexOf(" - ");
+      if (idx > 0) {
+        var tail = rawTitle.slice(idx + 3).trim();
+        if (tail) {
+          if (!source) source = tail;
+          if (tail === source) headline = rawTitle.slice(0, idx).trim();
+        }
+      }
+      var pubDate = childText(node, "pubDate");
+      var parsed = pubDate ? new Date(pubDate) : null;
+      items.push({
+        title: headline,
+        source: source,
+        url: childText(node, "link"),
+        published: parsed && !isNaN(parsed.getTime()) ? parsed.toISOString() : pubDate,
+        summary: cleanSummary(childText(node, "description"), headline)
+      });
+    }
+    return items;
+  }
+
+  function fetchLive() {
+    var controller = ("AbortController" in window) ? new AbortController() : null;
+    var timer = controller ? window.setTimeout(function () { controller.abort(); }, 8000) : null;
+    var options = { cache: "no-store" };
+    if (controller) options.signal = controller.signal;
+    return fetch(RELAY_URL, options)
+      .then(function (res) {
+        if (timer) window.clearTimeout(timer);
+        if (!res.ok) throw new Error("Google News relay unavailable");
+        return res.text();
+      })
+      .then(function (text) {
+        var items = parseRss(text);
+        if (!items.length) throw new Error("Google News returned no items");
+        return items;
+      });
+  }
+
+  function loadBackup() {
     fetch("news.json", { cache: "no-store" })
       .then(function (res) { if (!res.ok) throw new Error("news.json unavailable"); return res.json(); })
       .then(function (data) {
-        var payload = JSON.stringify(data);
-        if (payload !== lastPayload) { lastPayload = payload; render(data); }
+        var payload = "backup:" + JSON.stringify(data);
+        if (payload !== lastPayload) {
+          lastPayload = payload;
+          render((data && data.items) || []);
+        }
+        setStamp("Feed updated: " + (data && data.updated ? fmtTime(data.updated) : "—"));
       })
       .catch(function () { if (lastPayload === null) { lastPayload = "unavailable"; showFallback(); } });
+  }
+
+  function load() {
+    fetchLive()
+      .then(function (items) {
+        var payload = "live:" + JSON.stringify(items);
+        if (payload !== lastPayload) { lastPayload = payload; render(items); }
+        setStamp("Live from Google News · checked " + fmtTime(new Date().toISOString()));
+      })
+      .catch(loadBackup);
   }
   load();
   window.setInterval(load, 5 * 60 * 1000);
