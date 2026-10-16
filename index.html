@@ -1098,7 +1098,9 @@ var KBFC_KB = {
   var lastPayload = null;
 
   var GOOGLE_NEWS_RSS = "https://news.google.com/rss/search?q=%22Kerala+Blasters%22&hl=en-IN&gl=IN&ceid=IN:en";
-  var RELAY_URL = "https://api.allorigins.win/raw?url=" + encodeURIComponent(GOOGLE_NEWS_RSS);
+  var RSS2JSON_URL = "https://api.rss2json.com/v1/api.json?rss_url=" + encodeURIComponent(GOOGLE_NEWS_RSS);
+  var ALLOORIGINS_URL = "https://api.allorigins.win/raw?url=" + encodeURIComponent(GOOGLE_NEWS_RSS);
+  var CODETABS_URL = "https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(GOOGLE_NEWS_RSS);
 
   function esc(s) {
     return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -1191,22 +1193,80 @@ var KBFC_KB = {
     return items;
   }
 
-  function fetchLive() {
+  function parseDateLoose(s) {
+    if (!s) return null;
+    var d = new Date(s);
+    if (!isNaN(d.getTime())) return d;
+    d = new Date(String(s).replace(" ", "T") + "Z");
+    return isNaN(d.getTime()) ? null : d;
+  }
+  function parseRss2Json(data) {
+    var raw = (data && data.items) || [];
+    var items = [];
+    for (var i = 0; i < raw.length; i++) {
+      var entry = raw[i] || {};
+      var rawTitle = String(entry.title || "").trim();
+      if (!rawTitle) continue;
+      var source = String(entry.author || "").trim();
+      var headline = rawTitle;
+      var idx = rawTitle.lastIndexOf(" - ");
+      if (idx > 0) {
+        var tail = rawTitle.slice(idx + 3).trim();
+        if (tail) {
+          if (!source) source = tail;
+          headline = rawTitle.slice(0, idx).trim();
+        }
+      }
+      var pubDate = String(entry.pubDate || "");
+      var parsed = parseDateLoose(pubDate);
+      items.push({
+        title: headline,
+        source: source,
+        url: String(entry.link || ""),
+        published: parsed ? parsed.toISOString() : pubDate,
+        summary: cleanSummary(entry.description, headline)
+      });
+    }
+    return items;
+  }
+
+  function fetchWithTimeout(url) {
     var controller = ("AbortController" in window) ? new AbortController() : null;
     var timer = controller ? window.setTimeout(function () { controller.abort(); }, 8000) : null;
     var options = { cache: "no-store" };
     if (controller) options.signal = controller.signal;
-    return fetch(RELAY_URL, options)
-      .then(function (res) {
-        if (timer) window.clearTimeout(timer);
-        if (!res.ok) throw new Error("Google News relay unavailable");
-        return res.text();
-      })
-      .then(function (text) {
-        var items = parseRss(text);
-        if (!items.length) throw new Error("Google News returned no items");
+    function clear() { if (timer) window.clearTimeout(timer); }
+    return fetch(url, options).then(function (res) {
+      clear();
+      if (!res.ok) throw new Error("Relay request failed");
+      return res;
+    }, function (err) {
+      clear();
+      throw err;
+    });
+  }
+  function fetchRss2Json() {
+    return fetchWithTimeout(RSS2JSON_URL)
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+        var items = parseRss2Json(data);
+        if (!items.length) throw new Error("rss2json returned no items");
         return items;
       });
+  }
+  function fetchXmlRelay(url) {
+    return fetchWithTimeout(url)
+      .then(function (res) { return res.text(); })
+      .then(function (text) {
+        var items = parseRss(text);
+        if (!items.length) throw new Error("Relay returned no items");
+        return items;
+      });
+  }
+  function fetchLive() {
+    return fetchRss2Json()
+      .catch(function () { return fetchXmlRelay(ALLOORIGINS_URL); })
+      .catch(function () { return fetchXmlRelay(CODETABS_URL); });
   }
 
   function loadBackup() {
