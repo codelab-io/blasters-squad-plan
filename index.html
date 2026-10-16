@@ -275,6 +275,20 @@
     .teams .vs { display: block; margin: 6px 0; color: var(--muted); font: 600 14px/1 "Source Sans 3", sans-serif; }
     .fixture p { margin: 13px 0 0; color: var(--muted); font-size: 14px; }
 
+    .news-live-tag { display: inline-flex; align-items: center; gap: 7px; color: var(--yellow-ink); background: var(--yellow); padding: 3px 9px; font-weight: 800; text-transform: uppercase; font-size: 13px; }
+    .news-live-tag::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #c34526; animation: news-pulse 1.8s ease-in-out infinite; }
+    @keyframes news-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+    .news-list { border: 1px solid var(--line); background: var(--surface); }
+    .news-item { padding: 19px 22px; border-bottom: 1px solid var(--line); }
+    .news-item:last-child { border-bottom: 0; }
+    .news-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 5px; color: var(--muted); font-size: 13px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+    .news-meta .news-source { color: var(--blue); }
+    .news-item h3 { margin: 0 0 5px; font: 700 22px/1.1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .01em; }
+    .news-item h3 a { color: var(--ink); text-decoration: none; }
+    .news-item h3 a:hover { color: var(--blue); text-decoration: underline; }
+    .news-item p { margin: 0; color: var(--muted); font-size: 15px; }
+    .news-fallback { padding: 22px; border: 1px dashed var(--line); background: var(--surface); color: var(--muted); }
+
     .footer { display: flex; justify-content: space-between; align-items: center; gap: 20px; width: min(1120px, calc(100% - 40px)); margin: 0 auto; padding: 25px 0 calc(25px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); color: var(--muted); }
     .footer strong { color: var(--ink); }
 
@@ -451,7 +465,7 @@
       .player-name { font-size: 10px; }
       .disc { width: 38px; }
     }
-    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .news-live-tag::before { animation: none; } }
   </style>
 </head>
 <body>
@@ -537,7 +551,7 @@
             <div class="depth-body">
               <div class="depth-label">4–3–3</div>
               <div class="name-list">
-                <span class="chip">31 Arsh Anwer Shaikh</span><span class="chip">5 Sumit Sharma</span><span class="chip">13 James Bolton <i class="f">F</i></span><span class="chip">27 Aibanbha Kupar Dohling</span><span class="chip">4 Ruivah Hormipam</span><span class="chip">6 Freddy Lallawmawma</span><span class="chip">23 Nebojsa Kosovic <i class="f">F</i></span><span class="chip">8 Vibin Mohanan (C)</span><span class="chip">7 Korou Singh Thingujam</span><span class="chip">9 Andre Green <i class="f">F</i></span><span class="chip">45 Sreekuttan MS</span>
+                <span class="chip">31 Arsh Anwer Shaikh</span><span class="chip">5 Sumit Sharma</span><span class="chip">13 James Bolton <i class="f">F</i></span><span class="chip">27 Aibanbha Kupar Dohling</span><span class="chip">4 Ruivah Hormipam</span><span class="chip">6 Freddy Lallawmawma</span><span class="chip">23 Nebojsa Kosovic <i class="f">F</i></span><span class="chip">8 Vibin Mohanan</span><span class="chip">7 Korou Singh Thingujam</span><span class="chip">9 Andre Green <i class="f">F</i></span><span class="chip">45 Sreekuttan MS</span>
               </div>
             </div>
           </article>
@@ -576,11 +590,21 @@
           </article>
         </div>
       </section>
+
+      <section aria-labelledby="news-title">
+        <div class="section-heading">
+          <h2 id="news-title">Live News</h2>
+          <p><span class="news-live-tag">Live</span><br>Latest Kerala Blasters headlines, refreshed automatically. Feed updated: <strong id="newsUpdated">—</strong></p>
+        </div>
+        <div id="newsFeed">
+          <div class="news-fallback">News feed is being set up — check back shortly</div>
+        </div>
+      </section>
     </div>
   </main>
 
   <footer class="footer">
-    <strong>Updated 11 Oct 2026</strong>
+    <strong>Updated 16 Oct 2026</strong>
     <span>Opener XI · 4–3–3</span>
   </footer>
 </div>
@@ -625,6 +649,7 @@
     <button class="chat-chip" type="button" data-q="Which foreign players are in the squad?">Foreign slots</button>
     <button class="chat-chip" type="button" data-q="Who are the new signings this season?">New signings</button>
     <button class="chat-chip" type="button" data-q="What is the next match?">Next match</button>
+    <button class="chat-chip" type="button" data-q="What are the latest headlines?">Latest headlines</button>
   </div>
   <form class="chat-form" id="chatForm">
     <input id="chatInput" type="text" autocomplete="off" placeholder="Ask about players, history, stadium, fixtures…" aria-label="Type your question" />
@@ -644,7 +669,7 @@
     hormipam: { name: "Ruivah Hormipam", short: "Hormipam", initials: "4", shirt: "4", status: "Starter", match: "Full time", position: "Left-back", role: "Started at left-back in the 4–3–3.", foreign: false },
     freddy: { name: "Freddy Lallawmawma", short: "Freddy", initials: "6", shirt: "6", status: "Starter", match: "Full time", position: "Midfielder", role: "Started in Westwood’s three-player midfield.", foreign: false },
     kosovic: { name: "Nebojsa Kosovic", short: "Kosovic", initials: "23", shirt: "23", status: "Starter", match: "Off 46′", position: "Midfielder", role: "Started in midfield; replaced by Momo Yansane at half-time.", foreign: true },
-    vibin: { name: "Vibin Mohanan", short: "Vibin (C)", initials: "8", shirt: "8", status: "Captain", match: "Goal 18′", position: "Midfielder", role: "Captained the side and opened the scoring from Korou Singh’s assist; replaced by Sanan in the 66th minute.", foreign: false },
+    vibin: { name: "Vibin Mohanan", short: "Vibin", initials: "8", shirt: "8", status: "Starter", match: "Goal 18′", position: "Midfielder", role: "Opened the scoring from Korou Singh’s assist; replaced by Sanan in the 66th minute.", foreign: false },
     korou: { name: "Korou Singh Thingujam", short: "Korou", initials: "7", shirt: "7", status: "Starter", match: "Assist 18′", position: "Right wing", role: "Assisted Vibin’s opener; replaced by Paul Ramfangzauva at half-time.", foreign: false },
     green: { name: "Andre Green", short: "Green", initials: "9", shirt: "9", status: "Starter", match: "Goal 90+4′", position: "Left wing", role: "Started from the left and sealed the 2–0 win in stoppage time.", foreign: true },
     sreekuttan: { name: "Sreekuttan MS", short: "Sreekuttan", initials: "45", shirt: "45", status: "Starter", match: "Off 67′", position: "Striker", role: "Led the line; replaced by Ebindas Yesudasan in the 67th minute.", foreign: false }
@@ -723,7 +748,7 @@ var KBFC_KB = {
   meta: {
     club: "Kerala Blasters FC",
     season: "2026–27 Indian Super League",
-    updated: "11 Oct 2026"
+    updated: "16 Oct 2026"
   },
   club: {
     name: "Kerala Blasters FC",
@@ -757,7 +782,13 @@ var KBFC_KB = {
     nationality: "English",
     role: "Head coach",
     background: "English coach and former defender. Westwood is best known in India for building Bengaluru FC's early dynasty — two I-League titles (2013–14 and 2015–16) and the Federation Cup (2015). He has also coached ATK and RoundGlass Punjab FC in India, and managed the Afghanistan national team, before taking charge of the Blasters for the 2026–27 rebuild.",
-    style: "At the Blasters he has set the side up in a 4–3–3."
+    style: "At the Blasters he has set the side up in a 4–3–3.",
+    staff: [
+      { name: "Ashley Westwood", role: "Head Coach" },
+      { name: "Hasney Aljofree", role: "Assistant Manager" },
+      { name: "Amit Rana", role: "Assistant Coach" },
+      { name: "Felix D'Souza", role: "Goalkeeping Coach" }
+    ]
   },
   foreignRules: {
     maxSlots: 6,
@@ -765,7 +796,7 @@ var KBFC_KB = {
     note: "ISL clubs can register up to six foreign players. The Blasters have filled five of their six slots for 2026–27, so one foreign slot is still open."
   },
   season: {
-    summary: "The 2026–27 season is a rebuild under new head coach Ashley Westwood, with a refreshed foreign core. The Blasters opened the campaign with a 2–0 away win over Inter Kashi on 11 Oct 2026, and one foreign slot remains open for a further signing."
+    summary: "The 2026–27 season is a rebuild under new head coach Ashley Westwood, with Adrián Luna as club captain and a refreshed foreign core. The Blasters opened the campaign with a 2–0 away win over Inter Kashi on 11 Oct 2026, and one foreign slot remains open for a further signing."
   },
   squad: [
     { name: "Arsh Anwer Shaikh", keys: ["arsh", "shaikh"], shirt: "31", position: "Goalkeeper", nationality: "India", foreign: false, status: "starter", bg: "Indian goalkeeper.", note: "Started the opener and kept a clean sheet." },
@@ -775,20 +806,27 @@ var KBFC_KB = {
     { name: "Ruivah Hormipam", keys: ["hormipam", "ruivah"], shirt: "4", position: "Left-back", nationality: "India", foreign: false, status: "starter", bg: "Indian defender from Manipur and an India international; with the Blasters since 2021.", note: "Started the opener at left-back." },
     { name: "Freddy Lallawmawma", keys: ["freddy", "lallawmawma"], shirt: "6", position: "Midfielder", nationality: "India", foreign: false, status: "starter", bg: "Indian midfielder from Mizoram.", note: "Started in the three-man midfield in the opener." },
     { name: "Nebojsa Kosovic", keys: ["kosovic", "nebojsa"], shirt: "23", position: "Midfielder", nationality: "Montenegro", foreign: true, status: "starter", bg: "Montenegro international midfielder; previously with Partizan Belgrade and Kairat Almaty.", note: "Started the opener in midfield; replaced by Momo Yansane at half-time." },
-    { name: "Vibin Mohanan", keys: ["vibin", "mohanan"], shirt: "8", position: "Midfielder", nationality: "India", foreign: false, status: "starter", captain: true, bg: "Kerala-born midfielder who came through the Blasters' own youth setup.", note: "Captained the side in the opener and scored the first goal, on 18′ from Korou Singh's assist; replaced by Sanan on 66′." },
+    { name: "Vibin Mohanan", keys: ["vibin", "mohanan"], shirt: "8", position: "Midfielder", nationality: "India", foreign: false, status: "starter", bg: "Kerala-born midfielder who came through the Blasters' own youth setup.", note: "Scored the first goal in the opener, on 18′ from Korou Singh's assist; replaced by Sanan on 66′." },
+    { name: "Adrián Luna", keys: ["luna", "adrian"], shirt: "", position: "Midfielder", nationality: "", foreign: false, status: "squad", captain: true, bg: "Midfielder and the club captain of Kerala Blasters for the 2026–27 season." },
     { name: "Korou Singh Thingujam", keys: ["korou"], shirt: "7", position: "Right wing", nationality: "India", foreign: false, status: "starter", bg: "Indian winger from Manipur.", note: "Assisted the opening goal in the opener; replaced by Paul Ramfangzauva at half-time." },
     { name: "Andre Green", keys: ["green", "andre"], shirt: "9", position: "Left wing", nationality: "England", foreign: true, status: "starter", bg: "English winger who came through Aston Villa's academy and has played for Sheffield Wednesday.", note: "Started the opener on the left and sealed the 2–0 win with the 90+4′ goal." },
     { name: "Sreekuttan MS", keys: ["sreekuttan"], shirt: "45", position: "Striker", nationality: "India", foreign: false, status: "starter", bg: "Indian forward.", note: "Led the line in the opener; replaced by Ebindas Yesudasan on 67′." },
     { name: "Amrinder Singh", keys: ["amrinder"], shirt: "", position: "Goalkeeper", nationality: "India", foreign: false, status: "bench", bg: "Experienced India international goalkeeper — long-time Mumbai City FC captain and ISL winner there, and later with ATK Mohun Bagan and Odisha FC.", note: "Named on the bench for the opener." },
     { name: "Sandeep Singh", keys: ["sandeep"], shirt: "", position: "Defender", nationality: "India", foreign: false, status: "bench", bg: "Indian defender with the Blasters since 2020, previously with TRAU FC.", note: "Came on in the opener on 87′ for Sumit Sharma." },
-    { name: "Mohammed Sanan K", keys: ["sanan"], shirt: "", position: "Midfielder", nationality: "India", foreign: false, status: "bench", bg: "Indian midfielder from Kerala.", note: "Came on in the opener on 66′ for Vibin Mohanan." },
+    { name: "Mohammed Sanan K", keys: ["sanan"], shirt: "", position: "Forward", nationality: "India", foreign: false, status: "bench", bg: "Indian forward from Kerala.", note: "Came on in the opener on 66′ for Vibin Mohanan." },
     { name: "Sahil Tavora", keys: ["tavora", "sahil"], shirt: "", position: "Midfielder", nationality: "India", foreign: false, status: "bench", bg: "Indian midfielder who won the ISL Cup with Hyderabad FC in 2022; he began his ISL career with FC Goa.", note: "Named on the bench for the opener." },
     { name: "Paul Ramfangzauva", keys: ["paul", "ramfangzauva"], shirt: "", position: "Midfielder", nationality: "India", foreign: false, status: "bench", bg: "Indian midfielder from Mizoram.", note: "Came on in the opener at half-time for Korou Singh." },
-    { name: "Jaganath Jayan", keys: ["jaganath", "jayan"], shirt: "", position: "", nationality: "India", foreign: false, status: "bench", bg: "Indian squad player.", note: "Named on the bench for the opener." },
-    { name: "Ramhlunchhunga", keys: ["ramhlunchhunga"], shirt: "", position: "", nationality: "India", foreign: false, status: "bench", bg: "Indian squad player from Mizoram.", note: "Named on the bench for the opener." },
-    { name: "Ebindas Yesudasan", keys: ["ebindas", "yesudasan"], shirt: "", position: "", nationality: "India", foreign: false, status: "bench", bg: "Indian squad player.", note: "Came on in the opener on 67′ for Sreekuttan MS." },
+    { name: "Jaganath Jayan", keys: ["jaganath", "jayan"], shirt: "", position: "Defender", nationality: "India", foreign: false, status: "bench", bg: "Indian defender.", note: "Named on the bench for the opener." },
+    { name: "Ramhlunchhunga", keys: ["ramhlunchhunga"], shirt: "", position: "Forward", nationality: "India", foreign: false, status: "bench", bg: "Indian forward from Mizoram.", note: "Named on the bench for the opener." },
+    { name: "Ebindas Yesudasan", keys: ["ebindas", "yesudasan"], shirt: "", position: "Midfielder", nationality: "India", foreign: false, status: "bench", bg: "Indian midfielder.", note: "Came on in the opener on 67′ for Sreekuttan MS." },
     { name: "Momo Yansane", keys: ["yansane", "momo"], shirt: "", position: "Striker", nationality: "Guinea", foreign: true, status: "bench", bg: "Guinea international striker; previously played for Sheriff Tiraspol in Moldova and in Russia's top flight.", note: "Came on in the opener at half-time for Nebojsa Kosovic." },
-    { name: "Fallou Ndiaye", keys: ["ndiaye", "fallou"], shirt: "", position: "", nationality: "Senegal", foreign: true, status: "squad", bg: "Senegalese foreign signing for the 2026–27 season.", note: "Holds one of the five filled foreign slots; was not part of the opener matchday squad." }
+    { name: "Fallou Ndiaye", keys: ["ndiaye", "fallou"], shirt: "", position: "Defender", nationality: "Senegal", foreign: true, status: "squad", bg: "Senegalese foreign signing for the 2026–27 season.", note: "Holds one of the five filled foreign slots; was not part of the opener matchday squad." },
+    { name: "Al Sabith", keys: ["sabith", "al sabith"], shirt: "", position: "Goalkeeper", nationality: "India", foreign: false, status: "squad", bg: "Indian goalkeeper in the first-team squad." },
+    { name: "Bikash Yumnam", keys: ["bikash", "yumnam"], shirt: "", position: "Defender", nationality: "India", foreign: false, status: "squad", injured: true, bg: "Indian defender.", noteLabel: "Status", note: "Sidelined with a calf injury and expected to miss approximately one month (reported ahead of the season opener)." },
+    { name: "Naocha Singh Huidrom", keys: ["naocha", "huidrom"], shirt: "", position: "Defender", nationality: "India", foreign: false, status: "squad", bg: "Indian defender." },
+    { name: "Amey Ranawade", keys: ["ranawade", "amey"], shirt: "", position: "Defender", nationality: "India", foreign: false, status: "squad", bg: "Indian defender." },
+    { name: "Joel Lalramengmawia", keys: ["joel", "lalramengmawia"], shirt: "", position: "Midfielder", nationality: "India", foreign: false, status: "squad", bg: "Indian midfielder." },
+    { name: "Mohammad Yasir", keys: ["yasir", "mohammad yasir"], shirt: "", position: "Forward", nationality: "India", foreign: false, status: "squad", bg: "Indian forward." }
   ],
   signings: [
     { name: "Andre Green", text: "English winger, foreign signing for 2026–27; scored the second goal in the season opener." },
@@ -799,8 +837,17 @@ var KBFC_KB = {
   ],
   fixtures: [
     { date: "Sun 11 Oct 2026", home: "Inter Kashi", away: "Kerala Blasters", venue: "Away", status: "played", score: "0–2", detail: "Vibin Mohanan 18′ · Andre Green 90+4′" },
-    { date: "Sun 18 Oct 2026", time: "19:30 IST", home: "NorthEast United", away: "Kerala Blasters", venue: "Guwahati (away)", status: "upcoming", detail: "" },
-    { date: "Sun 25 Oct 2026", time: "19:30 IST", home: "Kerala Blasters", away: "Mumbai City", venue: "Kochi (home)", status: "upcoming", detail: "First home game of the season." }
+    { date: "Sun 18 Oct 2026", time: "19:30 IST", home: "NorthEast United", away: "Kerala Blasters", venue: "Indira Gandhi Athletic Stadium, Guwahati (away)", status: "upcoming", detail: "Next match." },
+    { date: "Sun 25 Oct 2026", time: "19:30 IST", home: "Kerala Blasters", away: "Mumbai City", venue: "Kochi (home)", status: "upcoming", detail: "First home game of the season." },
+    { date: "Sat 31 Oct 2026", time: "17:00 IST", home: "Chennaiyin FC", away: "Kerala Blasters", venue: "Chennai (away)", status: "upcoming", detail: "" },
+    { date: "Sun 29 Nov 2026", time: "17:00 IST", home: "FC Goa", away: "Kerala Blasters", venue: "Goa (away)", status: "upcoming", detail: "" },
+    { date: "Sun 6 Dec 2026", time: "17:00 IST", home: "Kerala Blasters", away: "Churchill Brothers", venue: "Kochi (home)", status: "upcoming", detail: "" },
+    { date: "Thu 10 Dec 2026", time: "17:00 IST", home: "Kerala Blasters", away: "Sporting Club Delhi", venue: "Kochi (home)", status: "upcoming", detail: "" },
+    { date: "Mon 14 Dec 2026", time: "19:30 IST", home: "Kerala Blasters", away: "Punjab FC", venue: "Kochi (home)", status: "upcoming", detail: "" },
+    { date: "Sun 20 Dec 2026", time: "19:30 IST", home: "Odisha FC", away: "Kerala Blasters", venue: "Bhubaneswar (away)", status: "upcoming", detail: "" },
+    { date: "Sun 3 Jan 2027", time: "19:30 IST", home: "Bengaluru FC", away: "Kerala Blasters", venue: "Bengaluru (away)", status: "upcoming", detail: "" },
+    { date: "Sun 10 Jan 2027", time: "17:00 IST", home: "Mohun Bagan SG", away: "Kerala Blasters", venue: "Kolkata (away)", status: "upcoming", detail: "" },
+    { date: "Sat 16 Jan 2027", time: "19:30 IST", home: "Kerala Blasters", away: "East Bengal", venue: "Kochi (home)", status: "upcoming", detail: "" }
   ],
   opener: {
     title: "Inter Kashi 0–2 Kerala Blasters — season opener, 11 Oct 2026",
@@ -814,6 +861,7 @@ var KBFC_KB = {
     ]
   },
   latestUpdates: [
+    { dateLabel: "Oct 2026", category: "Injury", text: "Defender Bikash Yumnam is sidelined with a calf injury and is expected to miss approximately one month (reported ahead of the season opener)." },
     { dateLabel: "11 Oct 2026", category: "Result", text: "Season opener: Kerala Blasters beat Inter Kashi 2–0 away — Vibin Mohanan (18′) and Andre Green (90+4′) scored, and the defence kept a clean sheet." },
     { dateLabel: "8 Oct 2026", category: "Signing", text: "Momo Yansane announced as the Blasters' new Guinean centre-forward for the 2026–27 season." },
     { dateLabel: "7 Oct 2026", category: "Signing", text: "James Bolton (England, centre-back) and Nebojsa Kosovic (Montenegro, midfield) confirmed as foreign signings." },
@@ -849,11 +897,13 @@ var KBFC_KB = {
     var facts = [];
     if (p.position) facts.push(esc(p.position));
     if (p.shirt) facts.push("shirt " + esc(p.shirt));
-    facts.push(esc(p.nationality) + (p.foreign ? " · counts as a foreign slot" : ""));
+    if (p.nationality) facts.push(esc(p.nationality) + (p.foreign ? " · counts as a foreign slot" : ""));
     facts.push(p.status === "starter" ? "in the starting XI" : p.status === "bench" ? "named on the bench for the opener" : "in the first-team squad");
+    if (p.captain) facts.push("club captain");
+    if (p.injured) facts.push("currently sidelined through injury");
     lines.push(facts.join(" · "));
     if (p.bg) lines.push(esc(p.bg));
-    if (p.note) lines.push("<em>Opener:</em> " + esc(p.note));
+    if (p.note) lines.push("<em>" + esc(p.noteLabel || "Opener") + ":</em> " + esc(p.note));
     return lines.join("<br>");
   }
 
@@ -875,6 +925,9 @@ var KBFC_KB = {
       if (inj.length) return "<strong>Injury / return news:</strong>" + list(inj.map(function (u) { return "<strong>" + esc(u.dateLabel) + ":</strong> " + esc(u.text); }));
       return "There are <strong>no injury or return updates</strong> in the latest verified club updates (as of " + esc(KB.meta.updated) + "). As soon as an official update lands, it will appear in the updates feed here.";
     }
+    if (q.indexOf("headline") !== -1 || q.indexOf("live news") !== -1 || q.indexOf("news feed") !== -1) {
+      return "For the very latest headlines as they land, check the <strong>Live News</strong> section on this page — it pulls in fresh Kerala Blasters headlines automatically and refreshes every few minutes while the page is open. For the club's confirmed updates (results, signings, injuries), ask me for the <strong>latest club updates</strong>.";
+    }
     if (q.indexOf("latest") !== -1 || q.indexOf("news") !== -1 || q.indexOf("update") !== -1 || q.indexOf("announcement") !== -1 || q.indexOf("whats new") !== -1 || q.indexOf("what's new") !== -1) {
       return updatesAnswer(null);
     }
@@ -882,7 +935,10 @@ var KBFC_KB = {
       return "<strong>Starting XI</strong> for the opener (4–3–3):" + list(starters().map(function (p) { return esc(p.name) + (p.position ? " — " + esc(p.position) : ""); })) + "Tap any player on the pitch above for their player card.";
     }
     if (q.indexOf("formation") !== -1 || q.indexOf("4-3-3") !== -1 || q.indexOf("4–3–3") !== -1 || q.indexOf("tactic") !== -1 || q.indexOf("system") !== -1) {
-      return "The Blasters are set up in a <strong>4–3–3</strong> under " + esc(KB.coach.name) + " — a back four, a three-man midfield with captain " + esc(captain().name) + " in it, and a front three. You can see the shape on the pitch at the top of this page.";
+      return "The Blasters are set up in a <strong>4–3–3</strong> under " + esc(KB.coach.name) + " — a back four, a three-man midfield and a front three. Club captain " + esc(captain().name) + " leads the squad. You can see the shape on the pitch at the top of this page.";
+    }
+    if (q.indexOf("staff") !== -1 || q.indexOf("assistant") !== -1 || q.indexOf("goalkeeping coach") !== -1 || q.indexOf("backroom") !== -1) {
+      return "<strong>Coaching staff</strong> for 2026–27:" + list(KB.coach.staff.map(function (s) { return "<strong>" + esc(s.name) + "</strong> — " + esc(s.role); }));
     }
     if (q.indexOf("coach") !== -1 || q.indexOf("westwood") !== -1 || q.indexOf("manager") !== -1) {
       return "<strong>" + esc(KB.coach.name) + "</strong> (" + esc(KB.coach.nationality) + ") is the Blasters' head coach. " + esc(KB.coach.background);
@@ -937,11 +993,11 @@ var KBFC_KB = {
     }
     if (q.indexOf("captain") !== -1) {
       var c = captain();
-      return "<strong>" + esc(c.name) + "</strong> captains the side — he led the team in the opener and scored the first goal of the season.";
+      return "<strong>" + esc(c.name) + "</strong> is the club captain of Kerala Blasters for the 2026–27 season.";
     }
     if (q.indexOf("goalkeeper") !== -1 || q.indexOf("keeper") !== -1 || q.indexOf("in goal") !== -1) {
       var gks = KB.squad.filter(function (p) { return p.position === "Goalkeeper"; });
-      return "Goalkeepers: " + gks.map(function (p) { return "<strong>" + esc(p.name) + "</strong> (" + (p.status === "starter" ? "started the opener, clean sheet" : "on the bench for the opener") + ")"; }).join(" and ") + ".";
+      return "Goalkeepers in the squad: " + gks.map(function (p) { return "<strong>" + esc(p.name) + "</strong> (" + (p.status === "starter" ? "started the opener, clean sheet" : p.status === "bench" ? "on the bench for the opener" : "in the first-team squad") + ")"; }).join(", ") + ".";
     }
     if (q.indexOf("clean sheet") !== -1) {
       return "Yes — the Blasters kept a <strong>clean sheet</strong> in the opener, beating Inter Kashi 2–0 away with " + esc(starters()[0].name) + " in goal and a back four of Sumit Sharma, James Bolton, Aibanbha Dohling and Ruivah Hormipam.";
@@ -949,8 +1005,31 @@ var KBFC_KB = {
     if (q.indexOf("season") !== -1) {
       return esc(KB.season.summary);
     }
+    if (q.indexOf("full squad") !== -1 || q.indexOf("whole squad") !== -1 || q.indexOf("entire squad") !== -1 || q.indexOf("squad list") !== -1 || q.indexOf("all players") !== -1 || q.indexOf("all the players") !== -1) {
+      var groups = [
+        ["Goalkeepers", KB.squad.filter(function (p) { return p.position === "Goalkeeper"; })],
+        ["Defenders", KB.squad.filter(function (p) { return /back|Defender/.test(p.position); })],
+        ["Midfielders", KB.squad.filter(function (p) { return p.position === "Midfielder"; })],
+        ["Forwards", KB.squad.filter(function (p) { return /wing|Striker|Forward/.test(p.position); })]
+      ];
+      return "<strong>The full first-team squad (" + KB.squad.length + " players):</strong>" + groups.map(function (g) {
+        return "<br><strong>" + g[0] + ":</strong> " + g[1].map(function (p) { return esc(p.name) + (p.captain ? " (captain)" : "") + (p.injured ? " (injured)" : ""); }).join(", ");
+      }).join("");
+    }
+    if (q.indexOf("defender") !== -1 || q.indexOf("defence") !== -1 || q.indexOf("defense") !== -1 || q.indexOf("back line") !== -1 || q.indexOf("backline") !== -1) {
+      var defs = KB.squad.filter(function (p) { return /back|Defender/.test(p.position); });
+      return "<strong>Defenders:</strong>" + list(defs.map(function (p) { return esc(p.name) + " — " + esc(p.position) + (p.injured ? " (currently sidelined with a calf injury)" : ""); }));
+    }
+    if (q.indexOf("midfielder") !== -1 || q.indexOf("midfield") !== -1) {
+      var mids = KB.squad.filter(function (p) { return p.position === "Midfielder"; });
+      return "<strong>Midfielders:</strong>" + list(mids.map(function (p) { return esc(p.name) + (p.captain ? " — club captain" : ""); }));
+    }
+    if (q.indexOf("forward") !== -1 || q.indexOf("striker") !== -1 || q.indexOf("winger") !== -1 || q.indexOf("attacker") !== -1) {
+      var fwds = KB.squad.filter(function (p) { return /wing|Striker|Forward/.test(p.position); });
+      return "<strong>Forwards:</strong>" + list(fwds.map(function (p) { return esc(p.name) + " — " + esc(p.position); }));
+    }
     if (q.indexOf("squad") !== -1 || q.indexOf("players") !== -1 || q.indexOf("team") !== -1) {
-      return "The matchday squad has <strong>" + starters().length + " starters</strong> and <strong>" + bench().length + " substitutes</strong>. Ask me about any player by name — for example 'Who is James Bolton?' — or ask for the starting XI or the bench.";
+      return "The full first-team squad has <strong>" + KB.squad.length + " players</strong>. The opener matchday squad had " + starters().length + " starters and " + bench().length + " substitutes. Ask me for the <strong>full squad</strong>, for a position group (goalkeepers, defenders, midfielders, forwards), or about any player by name — for example 'Who is Adrián Luna?'";
     }
 
     for (var i = 0; i < KB.squad.length; i++) {
@@ -1008,6 +1087,65 @@ var KBFC_KB = {
   document.addEventListener("keydown", function (event) {
     if (event.key === "Escape" && panel.classList.contains("open")) setOpen(false);
   });
+})();
+</script>
+
+<script>
+(function () {
+  var feedEl = document.getElementById("newsFeed");
+  var updatedEl = document.getElementById("newsUpdated");
+  if (!feedEl) return;
+  var lastPayload = null;
+
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+  function fmtTime(t) {
+    if (!t) return "";
+    var d = new Date(t);
+    if (isNaN(d.getTime())) return String(t);
+    return d.toLocaleString("en-IN", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit", hour12: true });
+  }
+  function render(data) {
+    var items = (data && data.items) || [];
+    items = items.slice().sort(function (a, b) {
+      return (Date.parse(b.published) || 0) - (Date.parse(a.published) || 0);
+    });
+    if (!items.length) {
+      feedEl.innerHTML = '<div class="news-fallback">No headlines right now — check back shortly.</div>';
+    } else {
+      feedEl.innerHTML = '<div class="news-list">' + items.map(function (item) {
+        var title = esc(item.title || "Untitled");
+        var headline = item.url
+          ? '<a href="' + esc(item.url) + '" target="_blank" rel="noopener">' + title + "</a>"
+          : title;
+        var meta = "";
+        if (item.source) meta += '<span class="news-source">' + esc(item.source) + "</span>";
+        if (item.published) meta += "<span>" + esc(fmtTime(item.published)) + "</span>";
+        return '<article class="news-item">' +
+          (meta ? '<div class="news-meta">' + meta + "</div>" : "") +
+          "<h3>" + headline + "</h3>" +
+          (item.summary ? "<p>" + esc(item.summary) + "</p>" : "") +
+          "</article>";
+      }).join("") + "</div>";
+    }
+    if (updatedEl) updatedEl.textContent = data && data.updated ? fmtTime(data.updated) : "—";
+  }
+  function showFallback() {
+    feedEl.innerHTML = '<div class="news-fallback">News feed is being set up — check back shortly</div>';
+    if (updatedEl) updatedEl.textContent = "—";
+  }
+  function load() {
+    fetch("news.json", { cache: "no-store" })
+      .then(function (res) { if (!res.ok) throw new Error("news.json unavailable"); return res.json(); })
+      .then(function (data) {
+        var payload = JSON.stringify(data);
+        if (payload !== lastPayload) { lastPayload = payload; render(data); }
+      })
+      .catch(function () { if (lastPayload === null) { lastPayload = "unavailable"; showFallback(); } });
+  }
+  load();
+  window.setInterval(load, 5 * 60 * 1000);
 })();
 </script>
 </body>
