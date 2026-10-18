@@ -36,6 +36,14 @@ h1{font:800 clamp(46px,7vw,84px)/.88 "Barlow Condensed";text-transform:uppercase
 .count b{display:block;font:800 30px/1 "Barlow Condensed";color:var(--yellow)}
 .count span{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#cfe0f5}
 .count-label{color:#fff;font-weight:800;margin-top:20px;text-transform:uppercase;letter-spacing:.06em;font-size:13px}
+/* RESULT */
+.result{margin-top:22px;background:rgba(1,16,44,.55);border:1px solid rgba(255,255,255,.25);border-left:5px solid var(--yellow);padding:16px 18px;max-width:640px}
+.rmeta{display:flex;gap:10px;align-items:center;flex-wrap:wrap;color:#cfe0f5;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.rscore{font:800 clamp(26px,3.4vw,36px)/1.05 "Barlow Condensed";text-transform:uppercase;margin:9px 0 7px;color:#fff}
+.rscore b{color:var(--yellow)}
+.result p{font-size:15px;margin:0 0 6px;color:#dce8f8;max-width:none}
+.result p:last-child{margin-bottom:0}
+.rfacts{color:#cfe0f5;font-weight:700}
 /* SECTIONS */
 main{padding:44px 0 70px}.shell{display:grid;gap:52px}
 .shead{display:flex;justify-content:space-between;align-items:end;gap:18px;margin-bottom:18px}
@@ -171,8 +179,14 @@ body.locked{overflow:hidden}
 <header class="hero"><div class="wrap hero-in"><div>
 <div class="kicker">ISL 2026–27 · Season underway</div>
 <h1>Matchday Mode: On</h1>
-<p>Kerala Blasters opened with a 2–0 away win over Inter Kashi. Explore the squad, build your own XI, compare players and count down to Guwahati.</p>
-<div class="count-label">Next match · NorthEast United vs Kerala Blasters · 18 Oct 2026, 7:30 PM IST · Guwahati</div>
+<p>Kerala Blasters fell to their first defeat of the season in Guwahati. Explore the squad, build your own XI, compare players and count down to the first home game in Kochi.</p>
+<div class="result" aria-label="Latest result">
+<div class="rmeta"><span class="tag">Full time</span><span>ISL Matchday 2 · Sun 18 Oct 2026 · Indira Gandhi Athletic Stadium, Guwahati</span></div>
+<div class="rscore">NorthEast United <b>4–1</b> Kerala Blasters</div>
+<p><strong>NorthEast:</strong> Alaaeddine Ajaraie 15′, 70′ · Antonio Moyano 45+4′ · Aman CK 82′<br><strong>Blasters:</strong> Momo Yansané 60′ — his first ISL goal for the club, assisted by captain Adrián Luna.</p>
+<p class="rfacts">Half-time 2–0 · Full-time 90+6′ · First league defeat of the season (W1 L1, 3 pts) · NorthEast United top of the table</p>
+</div>
+<div class="count-label">Next match · Kerala Blasters vs Mumbai City FC · Sun 25 Oct 2026, 7:30 PM IST · Jawaharlal Nehru Stadium, Kochi — first home game of the season</div>
 <div class="count" id="countdown" aria-live="off"><div><b id="cdD">–</b><span>Days</span></div><div><b id="cdH">–</b><span>Hours</span></div><div><b id="cdM">–</b><span>Mins</span></div><div><b id="cdS">–</b><span>Secs</span></div></div>
 </div>
 <div class="coach"><span>Head coach</span><strong>Ashley Westwood</strong><span>Captain · Adrián Luna</span><span>Home · Jawaharlal Nehru Stadium, Kochi</span></div>
@@ -217,7 +231,7 @@ body.locked{overflow:hidden}
 <div class="fgrid" id="fixtureGrid"></div></section>
 <section id="fanzone" class="reveal" aria-labelledby="fzT"><div class="shead"><h2 id="fzT">Fan Zone</h2><p>Have your say, then test your Blasters knowledge.</p></div>
 <div class="fanzone">
-<div class="fcard"><h3>Fan Poll</h3><p><strong style="color:var(--ink)">Who should start up front vs NorthEast United?</strong></p><div id="pollArea"></div></div>
+<div class="fcard"><h3>Fan Poll</h3><p><strong style="color:var(--ink)">Who should start up front vs Mumbai City (25 Oct, Kochi — first home game)?</strong></p><div id="pollArea"></div></div>
 <div class="fcard"><h3>Blasters Trivia</h3><p>Five questions, all from this season's verified facts.</p><div id="quizArea"></div></div>
 </div></section>
 <section id="news" class="reveal" aria-labelledby="news-title"><div class="shead"><h2 id="news-title">Live News</h2><p><span class="news-live-tag">Live</span><br>Latest Kerala Blasters headlines. <span id="newsStamp">Feed updated: —</span></p></div>
@@ -258,7 +272,7 @@ var KBFC_KB = {
   meta: {
     club: "Kerala Blasters FC",
     season: "2026–27 Indian Super League",
-    updated: "17 Oct 2026"
+    updated: "18 Oct 2026"
   },
   club: {
     name: "Kerala Blasters FC",
@@ -347,7 +361,7 @@ var KBFC_KB = {
   ],
   fixtures: [
     { date: "Sun 11 Oct 2026", home: "Inter Kashi", away: "Kerala Blasters", venue: "Away", status: "played", score: "0–2", detail: "Vibin Mohanan 18′ · Andre Green 90+4′" },
-    { date: "Sun 18 Oct 2026", time: "19:30 IST", home: "NorthEast United", away: "Kerala Blasters", venue: "Indira Gandhi Athletic Stadium, Guwahati (away)", status: "upcoming", detail: "Next match." },
+    { date: "Sun 18 Oct 2026", time: "19:30 IST", home: "NorthEast United", away: "Kerala Blasters", venue: "Indira Gandhi Athletic Stadium, Guwahati (away)", status: "played", score: "4–1", detail: "Ajaraie 15′, 70′ · Moyano 45+4′ · Aman CK 82′ — Yansané 60′ (first ISL goal for the club, assisted by captain Adrián Luna). Half-time 2–0. First league defeat of the season (W1 L1, 3 pts); NorthEast United top of the table." },
     { date: "Sun 25 Oct 2026", time: "19:30 IST", home: "Kerala Blasters", away: "Mumbai City", venue: "Kochi (home)", status: "upcoming", detail: "First home game of the season." },
     { date: "Sat 31 Oct 2026", time: "17:00 IST", home: "Chennaiyin FC", away: "Kerala Blasters", venue: "Chennai (away)", status: "upcoming", detail: "" },
     { date: "Sun 29 Nov 2026", time: "17:00 IST", home: "FC Goa", away: "Kerala Blasters", venue: "Goa (away)", status: "upcoming", detail: "" },
@@ -371,6 +385,7 @@ var KBFC_KB = {
     ]
   },
   latestUpdates: [
+    { dateLabel: "18 Oct 2026, evening", category: "Result", text: "ISL Matchday 2: NorthEast United beat Kerala Blasters 4–1 at the Indira Gandhi Athletic Stadium, Guwahati (half-time 2–0, full-time 90+6′). NorthEast scorers: Alaaeddine Ajaraie 15′ and 70′, Antonio Moyano 45+4′, Aman CK 82′. Momo Yansané scored the Blasters' goal on 60′ — his first ISL goal for the club, assisted by captain Adrián Luna. It was the Blasters' first league defeat of the season (record now W1 L1, 3 points), while NorthEast United moved to the top of the ISL table with two wins from two. Next fixture: Kerala Blasters vs Mumbai City FC, Sunday 25 October 2026, 7:30 PM IST at Jawaharlal Nehru Stadium, Kochi — the first home game of the season." },
     { dateLabel: "17 Oct 2026", category: "League table", text: "Per the official Kerala Blasters FC match preview published on 17 October 2026, the Blasters ended ISL Gameweek 1 at the top of the league table, following the 2–0 win away at Inter Kashi in the season opener." },
     { dateLabel: "17 Oct 2026", category: "Team news", text: "Per the official club match preview (17 Oct 2026), Vibin Mohanan captained the side in the season opener at Inter Kashi, wearing the captain's armband — Vibin scored the opener in the 18th minute and Andre Green added the second in 90+4′. The club's standing captain remains Adrián Luna." },
     { dateLabel: "16 Oct 2026", category: "Club announcement", text: "Kerala Blasters have appointed Thangboi Singto as Head of Football Development (source: club statement quoted by footballkerala.com and footballspike.com). Singto — a former Blasters assistant coach (2017–2019) who briefly served as interim head coach in Jan 2018 — returns to oversee the reserve team and youth development setups, talent identification, and coach education, strengthening the pathway from the youth system to the senior team." },
@@ -673,7 +688,7 @@ document.getElementById("dlXI").addEventListener("click",function(){
  var a=document.createElement("a"); a.download="my-blasters-xi.png"; a.href=c.toDataURL("image/png"); a.click(); });
 renderPitch();
 /* countdown */
-var target=new Date("2026-10-18T19:30:00+05:30").getTime();
+var target=new Date("2026-10-25T19:30:00+05:30").getTime();
 function tick(){ var diff=Math.max(0,target-Date.now()); var d=Math.floor(diff/864e5),h=Math.floor(diff/36e5)%24,m=Math.floor(diff/6e4)%60,s=Math.floor(diff/1e3)%60;
  document.getElementById("cdD").textContent=d; document.getElementById("cdH").textContent=h; document.getElementById("cdM").textContent=m; document.getElementById("cdS").textContent=s; }
 tick(); setInterval(tick,1000);
@@ -691,7 +706,7 @@ function renderCmp(){ document.getElementById("cmpBody").innerHTML=
  cmpRow("Position",function(p){return p.position;})+cmpRow("Shirt",function(p){return p.shirt||"—";})+cmpRow("Nationality",function(p){return p.nationality||"—";})+cmpRow("Type",function(p){return p.foreign?"Foreign slot":"Domestic";})+cmpRow("Status",function(p){return p.status==="starter"?"Starter":p.status==="bench"?"Bench (opener)":"First-team squad";})+cmpRow("Notes",function(p){return (p.captain?"Club captain. ":"")+(p.injured?"Injured — calf, ~1 month out. ":"")+((p.note||p.bg||"—"));}); }
 selA.addEventListener("change",renderCmp); selB.addEventListener("change",renderCmp); renderCmp();
 /* poll */
-var POLL_KEY="kbfc_poll_v1"; var pollOpts=["Sreekuttan MS","Momo Yansané","Andre Green","Mohammed Sanan K"]; var pollSeed=[86,64,41,19];
+var POLL_KEY="kbfc_poll_v2"; var pollOpts=["Sreekuttan MS","Momo Yansané","Andre Green","Mohammed Sanan K"]; var pollSeed=[86,64,41,19];
 function pollState(){ try{return JSON.parse(localStorage.getItem(POLL_KEY)||"null");}catch(e){return null;} }
 function renderPoll(){ var area=document.getElementById("pollArea"); var st=pollState();
  if(!st){ area.innerHTML=""; pollOpts.forEach(function(o,i){ var b=document.createElement("button"); b.className="poll-opt"; b.type="button"; b.textContent=o; b.addEventListener("click",function(){ var counts=pollSeed.slice(); counts[i]++; try{localStorage.setItem(POLL_KEY,JSON.stringify({choice:i,counts:counts}));}catch(e){} renderPoll(); }); area.appendChild(b); }); }
