@@ -272,7 +272,7 @@ var KBFC_KB = {
   meta: {
     club: "Kerala Blasters FC",
     season: "2026–27 Indian Super League",
-    updated: "19 Oct 2026"
+    updated: "20 Oct 2026"
   },
   club: {
     name: "Kerala Blasters FC",
@@ -385,7 +385,8 @@ var KBFC_KB = {
     ]
   },
   latestUpdates: [
-    { dateLabel: "19 Oct 2026", category: "League table", text: "After ISL 2026–27 Gameweek 2 (all results verified via Sportradar standings and Khel Now): Kerala Blasters sit 6th in the ISL table — 2 played, 1 win, 1 loss, 3 points, 3 goals for, 4 against (goal difference -1). NorthEast United lead the table with 6 points from 2 wins. The Blasters' next fixture is their first home game of the season: vs Mumbai City FC, Sunday 25 Oct 2026, 7:30 PM IST, Jawaharlal Nehru Stadium, Kochi." }, 
+    { dateLabel: "19 Oct 2026", category: "Press conference", text: "Post-NorthEast United post-match press conference (official club website keralablastersfc.in, 19 Oct 2026): head coach Ashley Westwood conceded the Blasters deserved the 4–1 defeat in Guwahati after a poor first half, but praised the second-half reaction that made it 2–1 — missed chances cost them a potential comeback. He said the group is learning about the players and testing different combinations through substitutions (“You learn more and more about who you need to change or swap or give other chances to other people”), and noted fitness is improving (“We’re getting better with our fitness — lads are lasting 90 minutes, not getting cramps”). Looking ahead, Westwood wants 7–8 points from the next 12 available to stay in touch; next fixtures: Mumbai City FC at home (first home game of the season, Sunday 25 Oct, 7:30 PM IST, Jawaharlal Nehru Stadium, Kochi) and then Chennaiyin FC away (Saturday 31 Oct)." },
+    { dateLabel: "19 Oct 2026", category: "League table", text: "After ISL 2026-27 Gameweek 2 (all results verified via Sportradar standings and Khel Now): Kerala Blasters sit 6th in the ISL table — 2 played, 1 win, 1 loss, 3 points, 3 goals for, 4 against (goal difference -1). NorthEast United lead the table with 6 points from 2 wins. The Blasters' next fixture is their first home game of the season: vs Mumbai City FC, Sunday 25 Oct 2026, 7:30 PM IST, Jawaharlal Nehru Stadium, Kochi." },
     { dateLabel: "18 Oct 2026, evening", category: "Result", text: "ISL Matchday 2: NorthEast United beat Kerala Blasters 4–1 at the Indira Gandhi Athletic Stadium, Guwahati (half-time 2–0, full-time 90+6′). NorthEast scorers: Alaaeddine Ajaraie 15′ and 70′, Antonio Moyano 45+4′, Aman CK 82′. Momo Yansané scored the Blasters' goal on 60′ — his first ISL goal for the club, assisted by captain Adrián Luna. It was the Blasters' first league defeat of the season (record now W1 L1, 3 points), while NorthEast United moved to the top of the ISL table with two wins from two. Next fixture: Kerala Blasters vs Mumbai City FC, Sunday 25 October 2026, 7:30 PM IST at Jawaharlal Nehru Stadium, Kochi — the first home game of the season." },
     { dateLabel: "17 Oct 2026", category: "League table", text: "Per the official Kerala Blasters FC match preview published on 17 October 2026, the Blasters ended ISL Gameweek 1 at the top of the league table, following the 2–0 win away at Inter Kashi in the season opener." },
     { dateLabel: "17 Oct 2026", category: "Team news", text: "Per the official club match preview (17 Oct 2026), Vibin Mohanan captained the side in the season opener at Inter Kashi, wearing the captain's armband — Vibin scored the opener in the 18th minute and Andre Green added the second in 90+4′. The club's standing captain remains Adrián Luna." },
@@ -670,7 +671,7 @@ document.addEventListener("keydown",function(e){if(e.key==="Escape")closeModals(
 var pickModal=document.getElementById("pickModal"), pickSlot=0;
 function openPick(idx){ pickSlot=idx; var d=FORMS[curForm][idx]; document.getElementById("pickPos").textContent="Slot: "+d[1];
  var list=document.getElementById("pickList"); list.innerHTML="";
- squad.filter(function(p){return fits(d[0],p);}).forEach(function(p){ var used=slotPlayers.indexOf(p)>-1; var b=document.createElement("button"); b.type="button"; b.disabled=used; b.innerHTML=p.name+"<small>"+p.position+(p.shirt?" · Shirt "+p.shirt:"")+(p.foreign?" · Foreign":"")+(p.captain?" · Captain":"")+(p.injured?" · Injured":"")+(used?" · Already picked":"")+"</small>"; b.addEventListener("click",function(){ slotPlayers[pickSlot]=p; closeModals(); renderPitch(); }); list.appendChild(c); });
+ squad.filter(function(p){return fits(d[0],p);}).forEach(function(p){ var used=slotPlayers.indexOf(p)>-1; var b=document.createElement("button"); b.type="button"; b.disabled=used; b.innerHTML=p.name+"<small>"+p.position+(p.shirt?" · Shirt "+p.shirt:"")+(p.foreign?" · Foreign":"")+(p.captain?" · Captain":"")+(p.injured?" · Injured":"")+(used?" · Already picked":"")+"</small>"; b.addEventListener("click",function(){ slotPlayers[pickSlot]=p; closeModals(); renderPitch(); }); list.appendChild(b); });
  if(slotPlayers[idx]){ var c=document.createElement("button"); c.type="button"; c.innerHTML="Clear this slot"; c.addEventListener("click",function(){slotPlayers[pickSlot]=null; closeModals(); renderPitch();}); list.appendChild(c); }
  pickModal.classList.add("open"); pickModal.setAttribute("aria-hidden","false"); document.body.classList.add("locked"); }
 var modeBtn=document.getElementById("modeBuild");
